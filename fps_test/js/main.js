@@ -22,11 +22,12 @@ document.body.appendChild(renderer.domElement);
 //     -1.0, -1.0, 1.0
 // ]);
 // geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-const geometry = new THREE.BoxGeometry(1, 1, 1);
+const geometry = new THREE.CylinderGeometry(10, 1, .05, 25);
 
 // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const material = new THREE.MeshPhongMaterial({ color: 0x00ffff })
 const cube = new THREE.Mesh(geometry, material);
+cube.position.y = -1;
 scene.add(cube);
 
 const skyColor = 0xB1E1FF;  // light blue
