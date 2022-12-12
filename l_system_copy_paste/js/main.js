@@ -1,3 +1,35 @@
+// import {LSystem} from './lsystem.js';
+
+class LSystem {
+
+    #axiom = "X";
+    #rules = {};
+    #branchLen = 10;
+    #branchLenVariance = 0;
+    #angle = 30;
+    #generations = 2;
+    currSentence = "";
+
+    iterations = 2;
+    theta = 18;
+    thetaRandomness = 0;
+    angle = 0;
+    scale = 4;
+    scaleRandomness = 0;
+    constantWidth = true;
+    deltarota = 30;
+
+    background = "#000000";
+    general = "#111faa";
+    random = true;
+    alpha = 0.8;
+
+    constructor(rules, axiom) {
+        this.#rules = rules;
+        this.#axiom = axiom;
+    }
+
+}
 
 var boundsx, boundsy,
     mouse = {
@@ -28,20 +60,24 @@ function Params() {
     this.constantWidth = true;
     this.deltarota = 30;
 }
+
 function Colors() {
     this.background = "#000000";
     this.general = "#111faa";
     this.random = true;
     this.alpha = 0.8;
 }
+
 function Rules() {
     this.axiom = 'X';
     this.mainRule = 'FF-[-F+F+F]+[+F-F-F]';
     this.Rule2 = '';
 }
+
 var rules = new Rules();
 var params = new Params();
 var colors = new Colors();
+let system = new LSystem();
 
 var clear = {
     clear: function () {
