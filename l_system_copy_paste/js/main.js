@@ -274,7 +274,7 @@ function setRules0() {
 }
 
 var camera, scene, renderer, controls;
-var plant, mesh;
+var plant, mesh, currentTreeInScene;
 var material;
 var tmp = new THREE.Vector3();
 
@@ -311,6 +311,7 @@ function init() {
 
     var material = new THREE.LineBasicMaterial({ color: 0x333333 });
     drawDefaultTree(material);
+    scene.add(plant);
 
     renderer.setClearColor(0xeeeeee);
     window.addEventListener('resize', onWindowResize, false);
@@ -319,13 +320,21 @@ function init() {
 
     const gui = new GUI()
     const treeFolder = gui.addFolder("Tree Settings");
-    treeFolder.add(system, 'theta', 0, 360).onChange(drawDefaultTree(material));
-    treeFolder.add(system, 'scale', 1, 800).onChange(drawDefaultTree(material));
-    treeFolder.add(system, 'iterations', 0, 5).onChange(drawDefaultTree(material));
+    treeFolder.add(system, 'theta', 0, 360)
+        .onChange(() => { drawDefaultTree(material); })
+        .name('Angle');
+    treeFolder.add(system, 'scale', 1, 10)
+        .onChange(() => { drawDefaultTree(material); })
+        .name('Length');
+    treeFolder.add(system, 'iterations', 0, 5)
+        .step(1)
+        .onChange(() => { drawDefaultTree(material); })
+        .name('Age');
     treeFolder.open();
 }
 
 function drawDefaultTree(material) {
+    scene.remove(plant);
     var line_geometry = new THREE.Geometry();
     line_geometry = DrawTheTree(line_geometry, 0, -150, 0);
     // plant = new THREE.Mesh(line_geometry, material);
