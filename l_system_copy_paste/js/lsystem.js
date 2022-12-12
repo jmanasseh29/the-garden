@@ -2,20 +2,20 @@ export class LSystem {
 
     #axiom;
     #rules = {};
-    #branchLen = 10;
+    #branchLen = 5;
     #branchLenVariance = 0;
     #angle = 30;
-    #generations = 2;
+    // #generations = 2;
     currSentence = "";
 
-    iterations = 2;
-    theta = 18;
+    iterations = 3;
+    theta = 20;
     thetaRandomness = 0;
     angle = 0;
-    scale = 4;
+    scale = 5;
     scaleRandomness = 0;
     constantWidth = true;
-    deltarota = 30;
+    deltarota = 300;
 
     background = "#000000";
     general = "#111faa";

@@ -1,5 +1,6 @@
 import { LSystem } from './lsystem.js';
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
+import { GUI } from './dat.gui.module.js';
 
 var boundsx, boundsy,
     mouse = {
@@ -55,6 +56,11 @@ let ruleMap8 = {
     'F': 'FF'
 }
 
+let ruleMap9 = {
+    'X': 'F',
+    'F': '[F]-F'
+}
+
 // function Params() {
 //     this.iterations = 2;
 //     this.theta = 18;
@@ -83,7 +89,9 @@ function Colors() {
 // var params = new Params();
 // var colors = new Colors();
 // let system = new LSystem(ruleMap7, "F-F-F-F");
-let system = new LSystem(ruleMap8, "X")
+let system = new LSystem(ruleMap8, "X");
+// let system = new LSystem(ruleMap9, "X");
+
 
 var clear = {
     clear: function () {
@@ -112,7 +120,7 @@ window.onmousedown = function (e) {
     mouse.py = mouse.y;
     mouse.x = e.clientX - window.innerWidth / 2;
     mouse.y = -(e.clientY - window.innerHeight / 2);
-    public_color = getRandomColor();
+    // const public_color = getRandomColor();
 }
 window.onmouseup = function (e) {
     mouse.down = false;
@@ -257,12 +265,12 @@ function DrawTheTree(geom, x_init, y_init, z_init) {
 
 
 function setRules0() {
-    system.axiom = "X";
-    system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
-    system.iterations = 5;
-    system.angle = 0;
-    system.theta = 30;
-    system.scale = 6;
+    // system.axiom = "X";
+    // system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
+    // system.iterations = 5;
+    // system.angle = 0;
+    // system.theta = 30;
+    // system.scale = 6;
 }
 
 var camera, scene, renderer, controls;
@@ -299,20 +307,30 @@ function init() {
     light2.position.y = 100;
     light2.position.z = 100;
 
-    setRules0();
+    // setRules0();
 
     var material = new THREE.LineBasicMaterial({ color: 0x333333 });
-    var line_geometry = new THREE.Geometry();
-    line_geometry = DrawTheTree(line_geometry, 0, -150, 0);
-    // plant = new THREE.Mesh(line_geometry, material);
-    plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
-    scene.add(plant);
+    drawDefaultTree(material);
 
     renderer.setClearColor(0xeeeeee);
     window.addEventListener('resize', onWindowResize, false);
 
     controls = new OrbitControls(camera, renderer.domElement);
 
+    const gui = new GUI()
+    const treeFolder = gui.addFolder("Tree Settings");
+    treeFolder.add(system, 'theta', 0, 360).onChange(drawDefaultTree(material));
+    treeFolder.add(system, 'scale', 1, 800).onChange(drawDefaultTree(material));
+    treeFolder.add(system, 'iterations', 0, 5).onChange(drawDefaultTree(material));
+    treeFolder.open();
+}
+
+function drawDefaultTree(material) {
+    var line_geometry = new THREE.Geometry();
+    line_geometry = DrawTheTree(line_geometry, 0, -150, 0);
+    // plant = new THREE.Mesh(line_geometry, material);
+    plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
+    scene.add(plant);
 }
 
 function addTree(x, y) {
@@ -328,7 +346,7 @@ function animate() {
     const t0 = Date.now() / 60;
     //scene.rotation.y = t0;
     // plant.rotation.y += 0.01;
-    camera.lookAt(plant.position);
+    // camera.lookAt(plant.position);
     renderer.render(scene, camera);
     // controls.update();
 }
