@@ -29,6 +29,21 @@ class LSystem {
         this.#axiom = axiom;
     }
 
+    generate() {
+        this.currSentence = system.axiom;
+        let newString = "";
+        for (let n = 0; n < this.iterations; n++) {
+            for (let i = 0; i < this.currSentence.length; i++) {
+                const c = this.currSentence.charAt(i);
+                if (this.#rules.hasOwnProperty(c)) {
+                    newString += this.#rules[c];
+                } else {
+                    newString += c;
+                }
+            }
+            this.currSentence = newString;
+        }
+    }
 }
 
 var boundsx, boundsy,
@@ -50,16 +65,16 @@ let ruleMap = {
     'F': 'FF'
 }
 
-function Params() {
-    this.iterations = 2;
-    this.theta = 18;
-    this.thetaRandomness = 0;
-    this.angle = 0;
-    this.scale = 4;
-    this.scaleRandomness = 0;
-    this.constantWidth = true;
-    this.deltarota = 30;
-}
+// function Params() {
+//     this.iterations = 2;
+//     this.theta = 18;
+//     this.thetaRandomness = 0;
+//     this.angle = 0;
+//     this.scale = 4;
+//     this.scaleRandomness = 0;
+//     this.constantWidth = true;
+//     this.deltarota = 30;
+// }
 
 function Colors() {
     this.background = "#000000";
@@ -68,16 +83,16 @@ function Colors() {
     this.alpha = 0.8;
 }
 
-function Rules() {
-    this.axiom = 'X';
-    this.mainRule = 'FF-[-F+F+F]+[+F-F-F]';
-    this.Rule2 = '';
-}
+// function Rules() {
+//     this.axiom = 'X';
+//     this.mainRule = 'FF-[-F+F+F]+[+F-F-F]';
+//     this.Rule2 = '';
+// }
 
-var rules = new Rules();
-var params = new Params();
-var colors = new Colors();
-let system = new LSystem();
+// var rules = new Rules();
+// var params = new Params();
+// var colors = new Colors();
+let system = new LSystem(ruleMap, "X");
 
 var clear = {
     clear: function () {
@@ -120,7 +135,7 @@ function drawLine(x, y, x0, y0, color, width) {
     ctx.moveTo(x, y);
     ctx.lineTo(x0, y0);
     ctx.strokeStyle = color;
-    if (params.constantWidth) ctx.lineWidth = 1; else
+    if (system.constantWidth) ctx.lineWidth = 1; else
         ctx.lineWidth = width;
     ctx.stroke();
 }
@@ -128,58 +143,59 @@ function getRandomColor() {
     var r = ~~(255 * Math.random());
     var g = ~~(255 * Math.random());
     var b = ~~(255 * Math.random());
-    var a = colors.alpha;
+    var a = system.alpha;
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 }
 
-function GetAxiomTree() {
-    // var Waxiom = rules.axiom;
-    // var newf = rules.mainRule;
-    // var newb = 'bb';
-    // var newx = rules.Rule2;
-    // var level = params.iterations;
-    // while (level > 0) {
-    //     var m = Waxiom.length;
-    //     var T = '';
-    //     for (var j = 0; j < m; j++) {
-    //         var a = Waxiom[j];
-    //         if (a == 'F') { T += newf; }
-    //         else if (a == 'b') { T += newb; }
-    //         else if (a == 'X') { T += newx; }
-    //         else
-    //             T += a;
-    //     }
-    //     Waxiom = T;
-    //     level--;
-    // }
-    // return Waxiom;
+// function GetAxiomTree() {
+//     // var Waxiom = rules.axiom;
+//     // var newf = rules.mainRule;
+//     // var newb = 'bb';
+//     // var newx = rules.Rule2;
+//     // var level = params.iterations;
+//     // while (level > 0) {
+//     //     var m = Waxiom.length;
+//     //     var T = '';
+//     //     for (var j = 0; j < m; j++) {
+//     //         var a = Waxiom[j];
+//     //         if (a == 'F') { T += newf; }
+//     //         else if (a == 'b') { T += newb; }
+//     //         else if (a == 'X') { T += newx; }
+//     //         else
+//     //             T += a;
+//     //     }
+//     //     Waxiom = T;
+//     //     level--;
+//     // }
+//     // return Waxiom;
 
-    let currSentence = rules.axiom;
-    let newString = "";
-    for (let n = 0; n < params.iterations; n++) {
-        for (let i = 0; i < currSentence.length; i++) {
-            const c = currSentence.charAt(i);
-            if (ruleMap.hasOwnProperty(c)) {
-                newString += ruleMap[c];
-            } else {
-                newString += c;
-            }
-        }
-        currSentence = newString;
-    }
-    return newString;
-}
+//     let currSentence = system.axiom;
+//     let newString = "";
+//     for (let n = 0; n < system.iterations; n++) {
+//         for (let i = 0; i < currSentence.length; i++) {
+//             const c = currSentence.charAt(i);
+//             if (ruleMap.hasOwnProperty(c)) {
+//                 newString += ruleMap[c];
+//             } else {
+//                 newString += c;
+//             }
+//         }
+//         currSentence = newString;
+//     }
+//     return newString;
+// }
 
 function DrawTheTree(geom, x_init, y_init, z_init) {
-    var geometry = geom;
-    var Wrule = GetAxiomTree();
-    var n = Wrule.length;
-    var stackX = []; var stackY = []; var stackZ = []; var stackA = [];
-    var stackV = []; var stackAxis = [];
+    let geometry = geom;
+    system.generate();
+    let Wrule = system.currSentence;
+    let n = Wrule.length;
+    let stackX = []; let stackY = []; let stackZ = []; let stackA = [];
+    let stackV = []; let stackAxis = [];
 
-    var theta = params.theta * Math.PI / 180;
-    var scale = params.scale;
-    var angle = params.angle * Math.PI / 180;
+    let theta = system.theta * Math.PI / 180;
+    let scale = system.scale;
+    let angle = system.angle * Math.PI / 180;
 
     var x0 = x_init; var y0 = y_init; var z0 = z_init;
     var x; var y; var z;
@@ -248,12 +264,12 @@ function DrawTheTree(geom, x_init, y_init, z_init) {
 
 
 function setRules0() {
-    rules.axiom = "X";
-    rules.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
-    params.iterations = 5;
-    params.angle = 0;
-    params.theta = 30;
-    params.scale = 6;
+    system.axiom = "X";
+    system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
+    system.iterations = 5;
+    system.angle = 0;
+    system.theta = 30;
+    system.scale = 6;
 }
 
 var camera, scene, renderer;
@@ -322,5 +338,5 @@ function animate() {
 
 window.onkeypress = function (e) {
     e = e || window.event;
-    if (e.keyCode == 87) params.deltarota += 1;
+    if (e.keyCode == 87) system.deltarota += 1;
 }
