@@ -280,7 +280,7 @@ function init() {
     renderer.setSize(800, 800);
     document.body.appendChild(renderer.domElement);
 
-    camera = new THREE.PerspectiveCamera(45, 800 / 800, 1, 1000);
+    camera = new THREE.PerspectiveCamera(45, 800 / 800, 1, 3000);
     //camera = new THREE.Camera();
     camera.position.z = 300;
     camera.position.y = 150;
@@ -288,6 +288,7 @@ function init() {
     scene = new THREE.Scene();
     //camera.lookAt(scene.position)
 
+    scene.background = new THREE.Color(0xfffbdb);
     const light2 = new THREE.PointLight(0xffffff, 1, 100);
     light2.position.set(0, 100, -200);
     scene.add(light2);
