@@ -2,7 +2,7 @@
 
 class LSystem {
 
-    #axiom = "X";
+    #axiom;
     #rules = {};
     #branchLen = 10;
     #branchLenVariance = 0;
@@ -30,7 +30,7 @@ class LSystem {
     }
 
     generate() {
-        this.currSentence = system.axiom;
+        this.currSentence = this.#axiom;
         let newString = "";
         for (let n = 0; n < this.iterations; n++) {
             for (let i = 0; i < this.currSentence.length; i++) {
@@ -54,14 +54,49 @@ var ic = 0x1000000;
 var random_color = '#0';
 
 let ruleMap1 = {
-    "F1": 'FF-[-F+F+F]+[+F-F-F]',
-    "F": 'F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]',
-    "x": "",
+    "F": 'FF-[-F+F+F]+[+F-F-F]',
+    // "F": 'F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]',
+    "X": "X",
     "b": "bb"
+}
+
+let ruleMap2 = {
+    "F": "F-",
+    "-": "F"
+}
+
+let ruleMap3 = {
+    "F": "F-+",
+    "-": "[-]FFF",
+    "+": "[FF+][-F]"
+}
+
+let ruleMap4 = {
+    "X": "[Fb][+Fb]FX",
+    "b": "Fb"
 }
 
 let ruleMap = {
     'X': '[FX][-FX][+FX]',
+    'F': 'FF'
+}
+
+let ruleMap5 = {
+    //AXIOM X
+    'F': 'FF',
+    'X': 'F+[-F-XF-X][+FF][--XF[+X]][++F-X]'
+}
+
+let ruleMap6 = {//Axiom FX
+    'F': 'FF+[+F-F-F]-[-F+F+F]'
+}
+
+let ruleMap7 = {
+    'F': 'FF-F+F-F-FF'
+}
+
+let ruleMap8 = {
+    'X': 'F-[[X]+X]+F[+FX]-X',
     'F': 'FF'
 }
 
@@ -92,7 +127,8 @@ function Colors() {
 // var rules = new Rules();
 // var params = new Params();
 // var colors = new Colors();
-let system = new LSystem(ruleMap, "X");
+// let system = new LSystem(ruleMap7, "F-F-F-F");
+let system = new LSystem(ruleMap8, "X")
 
 var clear = {
     clear: function () {
@@ -216,46 +252,48 @@ function DrawTheTree(geom, x_init, y_init, z_init) {
 
     for (var j = 0; j < n; j++) {
         var a = Wrule[j];
-        if (a == "+") {
-            angle -= theta;
-        }
-        if (a == "-") {
-            angle += theta;
-        }
-        if (a == "F") {
-            var a = vector_delta.clone().applyAxisAngle(axis_y, angle);
-            endpoint.addVectors(startpoint, a);
+        switch (a) {
+            case '+':
+                angle -= theta;
+                break;
+            case '-':
+                angle += theta;
+                break;
+            case 'F':
+                var a = vector_delta.clone().applyAxisAngle(axis_y, angle);
+                endpoint.addVectors(startpoint, a);
 
-            geometry.vertices.push(startpoint.clone());
-            geometry.vertices.push(endpoint.clone());
+                geometry.vertices.push(startpoint.clone());
+                geometry.vertices.push(endpoint.clone());
 
-            prev_startpoint.copy(startpoint);
-            startpoint.copy(endpoint);
-            axis_delta = new THREE.Vector3().copy(a).normalize();
-            rota += deltarota;// + (5.0 - Math.random()*10.0);
+                prev_startpoint.copy(startpoint);
+                startpoint.copy(endpoint);
+                axis_delta = new THREE.Vector3().copy(a).normalize();
+                rota += deltarota;// + (5.0 - Math.random()*10.0);
+                break;
+            case 'L':
+                endpoint.copy(startpoint);
+                endpoint.add(new THREE.Vector3(0, scale * 1.5, 0));
+                var vector_delta2 = new THREE.Vector3().subVectors(endpoint, startpoint);
+                vector_delta2.applyAxisAngle(axis_delta, rota2);
+                endpoint.addVectors(startpoint, vector_delta2);
 
-        }
-        if (a == "L") {
-            endpoint.copy(startpoint);
-            endpoint.add(new THREE.Vector3(0, scale * 1.5, 0));
-            var vector_delta2 = new THREE.Vector3().subVectors(endpoint, startpoint);
-            vector_delta2.applyAxisAngle(axis_delta, rota2);
-            endpoint.addVectors(startpoint, vector_delta2);
+                geometry.vertices.push(startpoint.clone());
+                geometry.vertices.push(endpoint.clone());
 
-            geometry.vertices.push(startpoint.clone());
-            geometry.vertices.push(endpoint.clone());
-
-            rota2 += 45 * Math.PI / 180;
-        }
-        if (a == "%") { }
-        if (a == "[") {
-            stackV.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
-            stackA[stackA.length] = angle;
-        }
-        if (a == "]") {
-            var point = stackV.pop();
-            startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
-            angle = stackA.pop();
+                rota2 += 45 * Math.PI / 180;
+                break;
+            case '%':
+                break;
+            case '[':
+                stackV.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
+                stackA[stackA.length] = angle;
+                break;
+            case ']':
+                var point = stackV.pop();
+                startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
+                angle = stackA.pop();
+                break;
         }
         bush_mark = a;
     }
@@ -310,7 +348,7 @@ function init() {
     var material = new THREE.LineBasicMaterial({ color: 0x333333 });
     var line_geometry = new THREE.Geometry();
     line_geometry = DrawTheTree(line_geometry, 0, -150, 0);
-    //plant = new THREE.Mesh(line_geometry, material);
+    // plant = new THREE.Mesh(line_geometry, material);
     plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
 
