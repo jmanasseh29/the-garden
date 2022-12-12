@@ -146,44 +146,14 @@ function getRandomColor() {
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 }
 
-// function GetAxiomTree() {
-//     // var Waxiom = rules.axiom;
-//     // var newf = rules.mainRule;
-//     // var newb = 'bb';
-//     // var newx = rules.Rule2;
-//     // var level = params.iterations;
-//     // while (level > 0) {
-//     //     var m = Waxiom.length;
-//     //     var T = '';
-//     //     for (var j = 0; j < m; j++) {
-//     //         var a = Waxiom[j];
-//     //         if (a == 'F') { T += newf; }
-//     //         else if (a == 'b') { T += newb; }
-//     //         else if (a == 'X') { T += newx; }
-//     //         else
-//     //             T += a;
-//     //     }
-//     //     Waxiom = T;
-//     //     level--;
-//     // }
-//     // return Waxiom;
-
-//     let currSentence = system.axiom;
-//     let newString = "";
-//     for (let n = 0; n < system.iterations; n++) {
-//         for (let i = 0; i < currSentence.length; i++) {
-//             const c = currSentence.charAt(i);
-//             if (ruleMap.hasOwnProperty(c)) {
-//                 newString += ruleMap[c];
-//             } else {
-//                 newString += c;
-//             }
-//         }
-//         currSentence = newString;
-//     }
-//     return newString;
-// }
-
+/**
+ * 
+ * @param {*} geom 
+ * @param {*} x_init 
+ * @param {*} y_init 
+ * @param {*} z_init 
+ * @returns 
+ */
 function DrawTheTree(geom, x_init, y_init, z_init) {
     let geometry = geom;
     system.generate();
@@ -309,7 +279,7 @@ function init() {
 
     // setRules0();
 
-    var material = new THREE.LineBasicMaterial({ color: 0x333333 });
+    var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
     drawDefaultTree(material);
     scene.add(plant);
 
@@ -323,7 +293,7 @@ function init() {
     treeFolder.add(system, 'theta', 0, 360)
         .onChange(() => { drawDefaultTree(material); })
         .name('Angle');
-    treeFolder.add(system, 'scale', 1, 10)
+    treeFolder.add(system, 'scale', 0, 10)
         .onChange(() => { drawDefaultTree(material); })
         .name('Length');
     treeFolder.add(system, 'iterations', 0, 5)
