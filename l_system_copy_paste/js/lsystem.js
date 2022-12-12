@@ -1,6 +1,6 @@
 export class LSystem {
 
-    #axiom = "X";
+    #axiom;
     #rules = {};
     #branchLen = 10;
     #branchLenVariance = 0;
@@ -27,4 +27,19 @@ export class LSystem {
         this.#axiom = axiom;
     }
 
+    generate() {
+        this.currSentence = this.#axiom;
+        let newString = "";
+        for (let n = 0; n < this.iterations; n++) {
+            for (let i = 0; i < this.currSentence.length; i++) {
+                const c = this.currSentence.charAt(i);
+                if (this.#rules.hasOwnProperty(c)) {
+                    newString += this.#rules[c];
+                } else {
+                    newString += c;
+                }
+            }
+            this.currSentence = newString;
+        }
+    }
 }

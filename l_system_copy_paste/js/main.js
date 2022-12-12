@@ -1,50 +1,5 @@
-// import {LSystem} from './lsystem.js';
-
-class LSystem {
-
-    #axiom;
-    #rules = {};
-    #branchLen = 10;
-    #branchLenVariance = 0;
-    #angle = 30;
-    #generations = 2;
-    currSentence = "";
-
-    iterations = 2;
-    theta = 18;
-    thetaRandomness = 0;
-    angle = 0;
-    scale = 4;
-    scaleRandomness = 0;
-    constantWidth = true;
-    deltarota = 30;
-
-    background = "#000000";
-    general = "#111faa";
-    random = true;
-    alpha = 0.8;
-
-    constructor(rules, axiom) {
-        this.#rules = rules;
-        this.#axiom = axiom;
-    }
-
-    generate() {
-        this.currSentence = this.#axiom;
-        let newString = "";
-        for (let n = 0; n < this.iterations; n++) {
-            for (let i = 0; i < this.currSentence.length; i++) {
-                const c = this.currSentence.charAt(i);
-                if (this.#rules.hasOwnProperty(c)) {
-                    newString += this.#rules[c];
-                } else {
-                    newString += c;
-                }
-            }
-            this.currSentence = newString;
-        }
-    }
-}
+import { LSystem } from './lsystem.js';
+import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 
 var boundsx, boundsy,
     mouse = {
@@ -310,7 +265,7 @@ function setRules0() {
     system.scale = 6;
 }
 
-var camera, scene, renderer;
+var camera, scene, renderer, controls;
 var plant, mesh;
 var material;
 var tmp = new THREE.Vector3();
@@ -333,10 +288,10 @@ function init() {
     scene = new THREE.Scene();
     //camera.lookAt(scene.position)
 
-    light2 = new THREE.PointLight(0xffffff, 1, 100);
+    const light2 = new THREE.PointLight(0xffffff, 1, 100);
     light2.position.set(0, 100, -200);
     scene.add(light2);
-    directionalLight = new THREE.DirectionalLight(0xffffff);
+    const directionalLight = new THREE.DirectionalLight(0xffffff);
     directionalLight.position.set(0, 0.5, -0.5);
     directionalLight.position.normalize();
     scene.add(directionalLight);
@@ -355,6 +310,8 @@ function init() {
     renderer.setClearColor(0xeeeeee);
     window.addEventListener('resize', onWindowResize, false);
 
+    controls = new OrbitControls(camera, renderer.domElement);
+
 }
 
 function addTree(x, y) {
@@ -367,11 +324,12 @@ function onWindowResize() {
 }
 function animate() {
     requestAnimationFrame(animate);
-    t0 = Date.now() / 60;
+    const t0 = Date.now() / 60;
     //scene.rotation.y = t0;
-    plant.rotation.y += 0.01;
+    // plant.rotation.y += 0.01;
     camera.lookAt(plant.position);
     renderer.render(scene, camera);
+    // controls.update();
 }
 
 window.onkeypress = function (e) {
