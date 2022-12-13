@@ -1,4 +1,6 @@
 import { LSystem } from './lsystem.js';
+import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
+import * as BufferGeometryUtils from "//cdn.skypack.dev/three@0.130.1/examples/jsm/utils/BufferGeometryUtils.js";
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import { GUI } from './dat.gui.module.js';
 
@@ -203,7 +205,8 @@ function init() {
 
     // setRules0();
 
-    var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
+    // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
+    const material = new THREE.MeshPhongMaterial({ color: 0x00ffff })
     drawDefaultTree(material);
     scene.add(plant);
 
@@ -224,6 +227,10 @@ function init() {
         .step(1)
         .onChange(() => { drawDefaultTree(material); })
         .name('Age');
+    treeFolder.add(system, 'deltarota', 0, 5)
+        .step(1)
+        .onChange(() => { drawDefaultTree(material); })
+        .name('other');
     treeFolder.open();
 
     const randomFolder = gui.addFolder("Stochasticity Settings");
@@ -237,11 +244,17 @@ function init() {
 
 function drawDefaultTree(material) {
     scene.remove(plant);
-    var line_geometry = new THREE.Geometry();
-    line_geometry = system.generateMesh(0, -70, 0);
-    // plant = new THREE.Mesh(line_geometry, material);
-    plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
+    // var line_geometry = new THREE.BufferGeometry();
+    let line_geometry = system.generateMesh(0, -70, 0);
+    plant = new THREE.Mesh(line_geometry, material);
+    // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
+    // let line_geometry = system.generateMesh(0, -70, 0);
+    // for (const branch of line_geometry) {
+    //     const branchMesh = new THREE.Mesh(branch, material);
+    //     scene.add(branchMesh);
+    // }
+    // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
 }
 
 function addTree(x, y) {

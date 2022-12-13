@@ -1,3 +1,6 @@
+import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
+import { BufferGeometryUtils } from "//cdn.skypack.dev/three@0.130.1/examples/jsm/utils/BufferGeometryUtils.js";
+
 export class LSystem {
 
     #axiom;
@@ -43,6 +46,13 @@ export class LSystem {
         }
     }
 
+    getPointInBetweenByLen(pointA, pointB, length) {
+
+        var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(length);
+        return pointA.clone().add(dir);
+
+    }
+
     /**
  * 
  * @param {*} geom 
@@ -53,7 +63,9 @@ export class LSystem {
  */
     generateMesh(x0, y0, z0) {
         // generateMesh2(geom, x_init, y_init, z_init) {
-        let geometry = new THREE.Geometry();
+        // let geometry = new THREE.Geometry();
+        let geom = new THREE.BufferGeometry();
+        let cylinders = [];
         this.generate();
         let directionStack = [];
         let vertexStack = [];
@@ -80,9 +92,22 @@ export class LSystem {
                     let a = currentUp.clone().multiplyScalar(branchLen);
                     endpoint.addVectors(startpoint, a);
 
-                    geometry.vertices.push(startpoint.clone());
-                    geometry.vertices.push(endpoint.clone());
+                    // geometry.vertices.push(startpoint.clone());
+                    // geometry.vertices.push(endpoint.clone());
+                    const segment = new THREE.CylinderGeometry(1, 1, branchLen, 5);
+                    const position = this.getPointInBetweenByLen(startpoint, endpoint, branchLen / 2);
+                    const quaternion = new THREE.Quaternion()
+                    const cylinderUpAxis = new THREE.Vector3(0, 1, 0)
+                    quaternion.setFromUnitVectors(cylinderUpAxis, currentUp)
+                    segment.applyQuaternion(quaternion)
+                    // segment.lookAt(currentUp);
+                    // segment.rotateX(currentUp.x);
+                    // segment.rotateX(currentUp.y);
+                    // segment.rotateZ(currentUp.z);
+                    segment.translate(position.x, position.y, position.z);
 
+
+                    cylinders.push(segment);
                     startpoint.copy(endpoint);
                     break;
                 case '+':
@@ -124,7 +149,11 @@ export class LSystem {
                     break;
             }
         }
-        return geometry;
+        // return geometry;
+        geom = BufferGeometryUtils.mergeBufferGeometries(cylinders, false);
+        // geom.computeBoundingBox();
+        return geom;
+        // return cylinders;
     }
 
     makeGeometry(x0, y0, z0) {
