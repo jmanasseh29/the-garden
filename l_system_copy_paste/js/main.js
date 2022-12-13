@@ -1,6 +1,5 @@
 import { LSystem } from './lsystem.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
-import * as BufferGeometryUtils from "//cdn.skypack.dev/three@0.130.1/examples/jsm/utils/BufferGeometryUtils.js";
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import { GUI } from './dat.gui.module.js';
 
@@ -103,8 +102,8 @@ function Colors() {
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 // let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
-// let system = new LSystem(ruleMap10, "F");
-let system = new LSystem(ruleMap11, "X");
+let system = new LSystem(ruleMap10, "F");
+// let system = new LSystem(ruleMap11, "X");
 
 
 var clear = {
@@ -227,10 +226,6 @@ function init() {
         .step(1)
         .onChange(() => { drawDefaultTree(material); })
         .name('Age');
-    treeFolder.add(system, 'deltarota', 0, 5)
-        .step(1)
-        .onChange(() => { drawDefaultTree(material); })
-        .name('other');
     treeFolder.open();
 
     const randomFolder = gui.addFolder("Stochasticity Settings");

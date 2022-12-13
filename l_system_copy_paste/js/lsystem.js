@@ -84,8 +84,10 @@ export class LSystem {
 
         for (let i = 0; i < this.currSentence.length; i++) {
             if (this.scaleRandomness > 0) {
-                branchLen = this.scale + (this.scaleRandomness * (Math.random() - 0.5))
+                //TODO: only need to calculate in certain places
+                branchLen = this.scale + (this.scaleRandomness * (Math.random() - 0.5));
             }
+            // theta = this.theta + (this.thetaRandomness * (Math.random() - 0.5));
             let a = this.currSentence[i];
             switch (a) {
                 case 'F':
