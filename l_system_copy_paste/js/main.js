@@ -88,6 +88,7 @@ function Colors() {
 // var rules = new Rules();
 // var params = new Params();
 // var colors = new Colors();
+// let system = new LSystem(ruleMap1, "F");
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
@@ -184,16 +185,21 @@ function DrawTheTree(geom, x_init, y_init, z_init) {
     var vector_delta = new THREE.Vector3(scale, scale, 0);
 
     for (var j = 0; j < n; j++) {
+        if (system.scaleRandomness > 0) {
+            scale = system.scale + (system.scaleRandomness * (Math.random() - 0.5))
+            vector_delta = new THREE.Vector3(scale, scale, 0);
+        }
         var a = Wrule[j];
         switch (a) {
             case '+':
-                angle -= theta;
+                angle -= theta + (system.thetaRandomness * (Math.random() - 0.5) * 0.1);
                 break;
             case '-':
-                angle += theta;
+                angle += theta + (system.thetaRandomness * (Math.random() - 0.5) * 0.1);;
                 break;
             case 'F':
                 var a = vector_delta.clone().applyAxisAngle(axis_y, angle);
+                // var a = vector_delta.clone().applyAxisAngle(axis_z, angle);
                 endpoint.addVectors(startpoint, a);
 
                 geometry.vertices.push(startpoint.clone());
@@ -301,6 +307,14 @@ function init() {
         .onChange(() => { drawDefaultTree(material); })
         .name('Age');
     treeFolder.open();
+
+    const randomFolder = gui.addFolder("Stochasticity Settings");
+    randomFolder.add(system, 'thetaRandomness', 0, 10)
+        .onFinishChange(() => { drawDefaultTree(material); })
+        .name('Angle');
+    randomFolder.add(system, 'scaleRandomness', 0, 10)
+        .onFinishChange(() => { drawDefaultTree(material); })
+        .name('Length');
 }
 
 function drawDefaultTree(material) {
