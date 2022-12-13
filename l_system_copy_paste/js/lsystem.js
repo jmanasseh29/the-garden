@@ -55,14 +55,11 @@ export class LSystem {
         // generateMesh2(geom, x_init, y_init, z_init) {
         let geometry = new THREE.Geometry();
         this.generate();
-        let stackA = [];
-        let stackV = [];
+        let directionStack = [];
+        let vertexStack = [];
 
         let theta = this.theta * Math.PI / 180;
         let branchLen = this.scale;
-
-        let eulerAngle = new THREE.Vector3(this.angle * Math.PI / 180,
-            this.angle * Math.PI / 180, this.angle * Math.PI / 180);
 
         let angle = this.angle * Math.PI / 180;
 
@@ -73,33 +70,24 @@ export class LSystem {
         var startpoint = new THREE.Vector3(x0, y0, z0),
             endpoint = new THREE.Vector3();
 
-        var vector_delta = new THREE.Vector3(0, 1, 0);
-        // let vector_delta = new THREE.Vector3(0.5, 1, 0);
-
         let currentUp = new THREE.Vector3(0, 1, 0);
 
         for (var i = 0; i < this.currSentence.length; i++) {
             if (this.scaleRandomness > 0) {
                 branchLen = this.scale + (this.scaleRandomness * (Math.random() - 0.5))
-                // vector_delta = new THREE.Vector3(branchLen, branchLen, 0);
             }
             var a = this.currSentence[i];
             switch (a) {
                 case '+':
-                    // eulerAngle.z -= theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
-                    angle -= theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
                     currentUp = currentUp.clone()
-                        .applyAxisAngle(z_axis, -theta)
+                        .applyAxisAngle(z_axis, -theta).normalize()
                     break;
                 case '-':
-                    // eulerAngle.z += theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
-                    angle += theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
                     currentUp = currentUp.clone()
-                        .applyAxisAngle(z_axis, theta)
+                        .applyAxisAngle(z_axis, theta).normalize()
                     break;
                 case 'F':
-                    var a = vector_delta.clone().applyAxisAngle(z_axis, angle);
-                    // var a = vector_delta.clone().applyAxisAngle(axis_z, angle);
+                    let a = currentUp.clone().multiplyScalar(branchLen);
                     endpoint.addVectors(startpoint, a);
 
                     geometry.vertices.push(startpoint.clone());
@@ -110,13 +98,13 @@ export class LSystem {
                 case '%':
                     break;
                 case '[':
-                    stackV.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
-                    stackA[stackA.length] = angle;
+                    vertexStack.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
+                    directionStack[directionStack.length] = currentUp.clone();
                     break;
                 case ']':
-                    let point = stackV.pop();
+                    let point = vertexStack.pop();
                     startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
-                    angle = stackA.pop();
+                    currentUp = directionStack.pop();
                     break;
             }
         }
@@ -149,7 +137,7 @@ export class LSystem {
             switch (a) {
                 case 'F': {
                     let startPos = currentTransform.clone();
-                    let trans = currentUp.normalize() * branchLen;
+                    let trans = currentUp.clone().normalize().multiplyScalar(branchLen);
                     // currentTransform.add(trans);
                     // let endPos = currentTransform.clone();
                     let endPos = currentTransform.add(trans);
