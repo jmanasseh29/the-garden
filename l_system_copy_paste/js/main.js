@@ -121,11 +121,11 @@ function Colors() {
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 // let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
-let system = new LSystem(ruleMap10, "F");
+// let system = new LSystem(ruleMap10, "F");
 // let system = new LSystem(ruleMap11, "X");
 // let system = new LSystem(ruleMap12, "X");
 // let system = new LSystem(ruleMap13, "R");
-// let system = new LSystem(ruleMap14, "R");
+let system = new LSystem(ruleMap14, "R");
 // let system = new LSystem(ruleMap15, "R");
 
 var clear = {

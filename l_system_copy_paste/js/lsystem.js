@@ -111,7 +111,7 @@ export class LSystem {
                     // baseThickness = this.thickness;
 
                     const segment = new THREE.CylinderGeometry(tipThickness,
-                        baseThickness, branchLen, 5);
+                        baseThickness, branchLen, 16);
                     const position = this.getPointInBetweenByLen(startpoint, endpoint, branchLen / 2);
                     const quaternion = new THREE.Quaternion()
                     const cylinderUpAxis = new THREE.Vector3(0, 1, 0)
@@ -125,9 +125,9 @@ export class LSystem {
 
                     cylinders.push(segment);
 
-                    // const elbow = new THREE.SphereGeometry(baseThickness, 10, 10);
-                    // elbow.translate(startpoint.x, startpoint.y, startpoint.z);
-                    // cylinders.push(elbow);
+                    const elbow = new THREE.SphereGeometry(tipThickness, 16, 16);
+                    elbow.translate(endpoint.x, endpoint.y, endpoint.z);
+                    cylinders.push(elbow);
                     startpoint.copy(endpoint);
                     lenMultiplier *= this.lenDecay;
                     break;
