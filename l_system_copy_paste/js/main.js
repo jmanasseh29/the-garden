@@ -71,6 +71,23 @@ let ruleMap11 = {
     'F': 'FF'
 }
 
+let ruleMap12 = {
+    'X': '^<XF^<XFX-F^>>XFX&F+>>XFX-F>X->'
+}
+
+let ruleMap13 = {
+    'R': "F[-^R][+R]FR",
+    'F': "FF"
+}
+
+let ruleMap14 = {
+    'R': "FFF[F&>-[F^R^F[+FR+&FC]R[-F-<FC]]<FR<F]"
+}
+
+let ruleMap15 = {
+    'R': ">>TF[^FR]C[&FRFR]"
+}
+
 // function Params() {
 //     this.iterations = 2;
 //     this.theta = 18;
@@ -102,9 +119,12 @@ function Colors() {
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 // let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
-let system = new LSystem(ruleMap10, "F");
+// let system = new LSystem(ruleMap10, "F");
 // let system = new LSystem(ruleMap11, "X");
-
+// let system = new LSystem(ruleMap12, "X");
+// let system = new LSystem(ruleMap13, "R");
+// let system = new LSystem(ruleMap14, "R");
+let system = new LSystem(ruleMap15, "R");
 
 var clear = {
     clear: function () {
@@ -222,6 +242,10 @@ function init() {
     treeFolder.add(system, 'scale', 0, 10)
         .onChange(() => { drawDefaultTree(material); })
         .name('Length');
+    treeFolder.add(system, 'thickness', 0, 5)
+        .onChange(() => { drawDefaultTree(material); })
+        .name('Thickness');
+    treeFolder.open();
     treeFolder.add(system, 'iterations', 0, 5)
         .step(1)
         .onChange(() => { drawDefaultTree(material); })

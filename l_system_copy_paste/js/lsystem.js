@@ -17,7 +17,9 @@ export class LSystem {
     angle = 0;
     scale = 5;
     scaleRandomness = 0;
-    constantWidth = true;
+    thickness = 1;
+    thicknessRatio = 0.9;
+    lenDecay = 1;
     deltarota = 300;
 
     background = "#000000";
@@ -69,6 +71,8 @@ export class LSystem {
         this.generate();
         let directionStack = [];
         let vertexStack = [];
+        let thicknessStack = [];
+        let lenStack = [];
 
         let theta = this.theta * Math.PI / 180;
         let branchLen = this.scale;
@@ -81,12 +85,15 @@ export class LSystem {
             endpoint = new THREE.Vector3();
 
         let currentUp = new THREE.Vector3(0, 1, 0);
+        let currentThickness = 1;
+        let lenMultiplier = 1;
 
         for (let i = 0; i < this.currSentence.length; i++) {
-            if (this.scaleRandomness > 0) {
-                //TODO: only need to calculate in certain places
-                branchLen = this.scale + (this.scaleRandomness * (Math.random() - 0.5));
-            }
+            // if (this.scaleRandomness > 0) {
+            //TODO: only need to calculate in certain places
+            branchLen = lenMultiplier
+                * (this.scale + (this.scaleRandomness * (Math.random() - 0.5)));
+            // }
             // theta = this.theta + (this.thetaRandomness * (Math.random() - 0.5));
             let a = this.currSentence[i];
             switch (a) {
@@ -96,7 +103,15 @@ export class LSystem {
 
                     // geometry.vertices.push(startpoint.clone());
                     // geometry.vertices.push(endpoint.clone());
-                    const segment = new THREE.CylinderGeometry(1, 1, branchLen, 5);
+                    let baseThickness = this.thickness * currentThickness;
+                    currentThickness *= this.thicknessRatio;
+                    let tipThickness = this.thickness * currentThickness;
+
+                    // tipThickness = this.thickness;
+                    // baseThickness = this.thickness;
+
+                    const segment = new THREE.CylinderGeometry(tipThickness,
+                        baseThickness, branchLen, 5);
                     const position = this.getPointInBetweenByLen(startpoint, endpoint, branchLen / 2);
                     const quaternion = new THREE.Quaternion()
                     const cylinderUpAxis = new THREE.Vector3(0, 1, 0)
@@ -108,8 +123,11 @@ export class LSystem {
                     // segment.rotateZ(currentUp.z);
                     segment.translate(position.x, position.y, position.z);
 
-
                     cylinders.push(segment);
+
+                    // const elbow = new THREE.SphereGeometry(baseThickness, 10, 10);
+                    // elbow.translate(startpoint.x, startpoint.y, startpoint.z);
+                    // cylinders.push(elbow);
                     startpoint.copy(endpoint);
                     break;
                 case '+':
@@ -143,13 +161,18 @@ export class LSystem {
                 case '[':
                     vertexStack.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
                     directionStack[directionStack.length] = currentUp.clone();
+                    lenStack[lenStack.length] = lenMultiplier;
+                    thicknessStack.push(currentThickness);
                     break;
                 case ']':
                     let point = vertexStack.pop();
                     startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
                     currentUp = directionStack.pop();
+                    lenMultiplier = lenStack.pop();
+                    currentThickness = thicknessStack.pop();
                     break;
             }
+            lenMultiplier *= this.lenDecay;
         }
         // return geometry;
         geom = BufferGeometryUtils.mergeBufferGeometries(cylinders, false);
