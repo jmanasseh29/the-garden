@@ -121,11 +121,11 @@ function Colors() {
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 // let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
-// let system = new LSystem(ruleMap10, "F");
+let system = new LSystem(ruleMap10, "F");
 // let system = new LSystem(ruleMap11, "X");
 // let system = new LSystem(ruleMap12, "X");
 // let system = new LSystem(ruleMap13, "R");
-let system = new LSystem(ruleMap14, "R");
+// let system = new LSystem(ruleMap14, "R");
 // let system = new LSystem(ruleMap15, "R");
 
 var clear = {
@@ -246,6 +246,7 @@ function init() {
         .name('Length');
     treeFolder.add(system, 'lenDecay', 0.1, 1)
         .onChange(() => { drawDefaultTree(material); })
+        .step(0.01)
         .name('Length Decay');
     treeFolder.add(system, 'thickness', 0, 5)
         .onChange(() => { drawDefaultTree(material); })
@@ -253,7 +254,6 @@ function init() {
     treeFolder.add(system, 'thicknessDecay', 0.1, 1)
         .onChange(() => { drawDefaultTree(material); })
         .name('Thickness Decay');
-    treeFolder.open();
     treeFolder.add(system, 'iterations', 0, 5)
         .step(1)
         .onChange(() => { drawDefaultTree(material); })
@@ -272,7 +272,7 @@ function init() {
 function drawDefaultTree(material) {
     scene.remove(plant);
     // var line_geometry = new THREE.BufferGeometry();
-    let line_geometry = system.generateMesh(0, -70, 0);
+    let line_geometry = system.generateMesh(0, 0, 0);
     plant = new THREE.Mesh(line_geometry, material);
     // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
