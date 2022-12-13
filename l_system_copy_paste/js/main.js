@@ -174,6 +174,7 @@ function getRandomColor() {
 var camera, scene, renderer, controls;
 var plant, mesh, currentTreeInScene;
 var material;
+const floorPos = -20;
 var tmp = new THREE.Vector3();
 
 init();
@@ -206,6 +207,22 @@ function init() {
     light2.position.z = 100;
 
     // setRules0();
+    let floorGeo = new THREE.PlaneBufferGeometry(2000, 2000, 8, 8);
+    let floorMat = new THREE.MeshBasicMaterial({ color: 0x02e80e, side: THREE.DoubleSide });
+    let floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotateX(- Math.PI / 2);
+    floor.position.set(0, floorPos, 0);
+
+    scene.add(floor);
+
+    const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
+
+    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const dummyPondMat = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+    const dummyPond = new THREE.Mesh(dummyPondGeo, dummyPondMat);
+    dummyPond.position.y = floorPos;
+    dummyPond.position.z = 90;
+    scene.add(dummyPond);
 
     // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
     const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
@@ -216,6 +233,7 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);
 
     controls = new OrbitControls(camera, renderer.domElement);
+    controls.maxPolarAngle = Math.PI / 2;
 
     const gui = new GUI()
     const treeFolder = gui.addFolder("Tree Settings");
@@ -253,7 +271,7 @@ function init() {
 function drawDefaultTree(material) {
     scene.remove(plant);
     // var line_geometry = new THREE.BufferGeometry();
-    let line_geometry = system.generateMesh(0, 0, 0);
+    let line_geometry = system.generateMesh(0, floorPos, 0);
     plant = new THREE.Mesh(line_geometry, material);
     // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
