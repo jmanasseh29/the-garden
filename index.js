@@ -28,11 +28,11 @@ loadFile('shaders/utils.glsl').then((utils) => {
   const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 100);
   // camera.position.set(0.426, 0.677, -2.095);
   // camera.rotation.set(2.828, 0.191, 3.108);
-  camera.position.set(WATER_WIDTH/2.0, POOL_HEIGHT*2, -WATER_WIDTH/2.0);
+  camera.position.set(WATER_WIDTH / 2.0, POOL_HEIGHT * 2, -WATER_WIDTH / 2.0);
   camera.rotation.set(2.828, 0.191, 3.108);
 
 
-  const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true});
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.setSize(width, height);
   renderer.autoClear = false;
 
@@ -56,7 +56,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
   // Ray caster
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  const targetgeometry = new THREE.PlaneGeometry(WATER_WIDTH, WATER_WIDTH);
+  const targetgeometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
   for (let vertex of targetgeometry.vertices) {
     vertex.z = - vertex.y;
     vertex.y = 0.;
@@ -75,10 +75,10 @@ loadFile('shaders/utils.glsl').then((utils) => {
 
       this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
 
-      this._geometry = new THREE.PlaneBufferGeometry(WATER_WIDTH, WATER_WIDTH);
+      this._geometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
 
-      this._textureA = new THREE.WebGLRenderTarget(DETAIL_BITS, DETAIL_BITS, {type: THREE.FloatType});
-      this._textureB = new THREE.WebGLRenderTarget(DETAIL_BITS, DETAIL_BITS, {type: THREE.FloatType});
+      this._textureA = new THREE.WebGLRenderTarget(DETAIL_BITS, DETAIL_BITS, { type: THREE.FloatType });
+      this._textureB = new THREE.WebGLRenderTarget(DETAIL_BITS, DETAIL_BITS, { type: THREE.FloatType });
       this.texture = this._textureA;
 
       const shadersPromises = [
@@ -89,40 +89,40 @@ loadFile('shaders/utils.glsl').then((utils) => {
       ];
 
       this.loaded = Promise.all(shadersPromises)
-          .then(([vertexShader, dropFragmentShader, normalFragmentShader, updateFragmentShader]) => {
-        const dropMaterial = new THREE.RawShaderMaterial({
-          uniforms: {
+        .then(([vertexShader, dropFragmentShader, normalFragmentShader, updateFragmentShader]) => {
+          const dropMaterial = new THREE.RawShaderMaterial({
+            uniforms: {
               center: { value: [0, 0] },
               radius: { value: 0 },
               strength: { value: 0 },
               texture: { value: null },
-          },
-          vertexShader: vertexShader,
-          fragmentShader: dropFragmentShader,
-        });
+            },
+            vertexShader: vertexShader,
+            fragmentShader: dropFragmentShader,
+          });
 
-        const normalMaterial = new THREE.RawShaderMaterial({
-          uniforms: {
+          const normalMaterial = new THREE.RawShaderMaterial({
+            uniforms: {
               delta: { value: [1.0 / DETAIL_BITS, 1.0 / DETAIL_BITS] },  // TODO: Remove this useless uniform and hardcode it in shaders?
               texture: { value: null },
-          },
-          vertexShader: vertexShader,
-          fragmentShader: normalFragmentShader,
-        });
+            },
+            vertexShader: vertexShader,
+            fragmentShader: normalFragmentShader,
+          });
 
-        const updateMaterial = new THREE.RawShaderMaterial({
-          uniforms: {
+          const updateMaterial = new THREE.RawShaderMaterial({
+            uniforms: {
               delta: { value: [1.0 / DETAIL_BITS, 1.0 / DETAIL_BITS] },  // TODO: Remove this useless uniform and hardcode it in shaders?
               texture: { value: null },
-          },
-          vertexShader: vertexShader,
-          fragmentShader: updateFragmentShader,
-        });
+            },
+            vertexShader: vertexShader,
+            fragmentShader: updateFragmentShader,
+          });
 
-        this._dropMesh = new THREE.Mesh(this._geometry, dropMaterial);
-        this._normalMesh = new THREE.Mesh(this._geometry, normalMaterial);
-        this._updateMesh = new THREE.Mesh(this._geometry, updateMaterial);
-      });
+          this._dropMesh = new THREE.Mesh(this._geometry, dropMaterial);
+          this._normalMesh = new THREE.Mesh(this._geometry, normalMaterial);
+          this._updateMesh = new THREE.Mesh(this._geometry, updateMaterial);
+        });
     }
 
     // Add a drop of water at the (x, y) coordinate (in the range [-1, 1])
@@ -205,7 +205,9 @@ loadFile('shaders/utils.glsl').then((utils) => {
   class Water {
 
     constructor() {
-      this.geometry = new THREE.PlaneBufferGeometry(WATER_WIDTH, WATER_WIDTH, 200, 200);
+      // this.geometry = new THREE.CircleGeometry(WATER_WIDTH / 2, WATER_WIDTH / 2, 200, 200);
+      this.geometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
+      // this.geometry = new THREE.CircleGeometry(WATER_WIDTH / 2, WATER_WIDTH / 2);
 
       const shadersPromises = [
         loadFile('shaders/water/vertex.glsl'),
@@ -213,26 +215,26 @@ loadFile('shaders/utils.glsl').then((utils) => {
       ];
 
       this.loaded = Promise.all(shadersPromises)
-          .then(([vertexShader, fragmentShader]) => {
-        this.material = new THREE.RawShaderMaterial({
-          uniforms: {
+        .then(([vertexShader, fragmentShader]) => {
+          this.material = new THREE.RawShaderMaterial({
+            uniforms: {
               light: { value: light },
               floor: { value: floor },
               water: { value: null },
               // causticTex: { value: null },
               underwater: { value: false }
-          },
-          vertexShader: vertexShader,
-          fragmentShader: fragmentShader,
-        });
+            },
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+          });
 
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.material.uniforms['floor'].value.wrapS = this.material.uniforms['floor'].value.wrapT = THREE.RepeatWrapping;
-      });
+          this.mesh = new THREE.Mesh(this.geometry, this.material);
+          this.material.uniforms['floor'].value.wrapS = this.material.uniforms['floor'].value.wrapT = THREE.RepeatWrapping;
+        });
     }
 
     draw(renderer, waterTexture) {//, causticsTexture) {
-      
+
       this.material.uniforms['water'].value = waterTexture;
       // this.material.uniforms['causticTex'].value = causticsTexture;
 
