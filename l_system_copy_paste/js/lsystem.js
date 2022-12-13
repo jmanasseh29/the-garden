@@ -18,7 +18,7 @@ export class LSystem {
     scale = 5;
     scaleRandomness = 0;
     thickness = 1;
-    thicknessRatio = 0.9;
+    thicknessDecay = 0.9;
     lenDecay = 1;
     deltarota = 300;
 
@@ -104,7 +104,7 @@ export class LSystem {
                     // geometry.vertices.push(startpoint.clone());
                     // geometry.vertices.push(endpoint.clone());
                     let baseThickness = this.thickness * currentThickness;
-                    currentThickness *= this.thicknessRatio;
+                    currentThickness *= this.thicknessDecay;
                     let tipThickness = this.thickness * currentThickness;
 
                     // tipThickness = this.thickness;
@@ -129,6 +129,7 @@ export class LSystem {
                     // elbow.translate(startpoint.x, startpoint.y, startpoint.z);
                     // cylinders.push(elbow);
                     startpoint.copy(endpoint);
+                    lenMultiplier *= this.lenDecay;
                     break;
                 case '+':
                     currentUp = currentUp.clone()
@@ -161,7 +162,7 @@ export class LSystem {
                 case '[':
                     vertexStack.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
                     directionStack[directionStack.length] = currentUp.clone();
-                    lenStack[lenStack.length] = lenMultiplier;
+                    lenStack.push(lenMultiplier);
                     thicknessStack.push(currentThickness);
                     break;
                 case ']':
@@ -172,7 +173,6 @@ export class LSystem {
                     currentThickness = thicknessStack.pop();
                     break;
             }
-            lenMultiplier *= this.lenDecay;
         }
         // return geometry;
         geom = BufferGeometryUtils.mergeBufferGeometries(cylinders, false);
