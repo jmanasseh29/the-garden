@@ -114,9 +114,9 @@ function Colors() {
 // let system = new LSystem(ruleMap11, "X");
 // let system = new LSystem(ruleMap12, "X");
 // let system = new LSystem(ruleMap13, "R");
-// let system = new LSystem(ruleMap14, "R");
+let system = new LSystem(ruleMap14, "R");
 // let system = new LSystem(ruleMap15, "R");
-let system = new LSystem(ruleMap16, "FX");
+// let system = new LSystem(ruleMap16, "FX");
 
 var clear = {
     clear: function () {
