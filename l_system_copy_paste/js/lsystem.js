@@ -60,31 +60,45 @@ export class LSystem {
 
         let theta = this.theta * Math.PI / 180;
         let branchLen = this.scale;
+
+        let eulerAngle = new THREE.Vector3(this.angle * Math.PI / 180,
+            this.angle * Math.PI / 180, this.angle * Math.PI / 180);
+
         let angle = this.angle * Math.PI / 180;
 
-        var axis_y = new THREE.Vector3(0, 1, 0);
+        const x_axis = new THREE.Vector3(1, 0, 0);
+        const y_axis = new THREE.Vector3(0, 1, 0);
+        const z_axis = new THREE.Vector3(0, 0, 1);
 
         var startpoint = new THREE.Vector3(x0, y0, z0),
             endpoint = new THREE.Vector3();
 
-        var vector_delta = new THREE.Vector3(branchLen, branchLen, 0);
+        var vector_delta = new THREE.Vector3(0, 1, 0);
         // let vector_delta = new THREE.Vector3(0.5, 1, 0);
 
-        for (var j = 0; j < this.currSentence.length; j++) {
+        let currentUp = new THREE.Vector3(0, 1, 0);
+
+        for (var i = 0; i < this.currSentence.length; i++) {
             if (this.scaleRandomness > 0) {
                 branchLen = this.scale + (this.scaleRandomness * (Math.random() - 0.5))
                 // vector_delta = new THREE.Vector3(branchLen, branchLen, 0);
             }
-            var a = this.currSentence[j];
+            var a = this.currSentence[i];
             switch (a) {
                 case '+':
+                    // eulerAngle.z -= theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
                     angle -= theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
+                    currentUp = currentUp.clone()
+                        .applyAxisAngle(z_axis, -theta)
                     break;
                 case '-':
-                    angle += theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);;
+                    // eulerAngle.z += theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
+                    angle += theta + (this.thetaRandomness * (Math.random() - 0.5) * 0.1);
+                    currentUp = currentUp.clone()
+                        .applyAxisAngle(z_axis, theta)
                     break;
                 case 'F':
-                    var a = vector_delta.clone().applyAxisAngle(axis_y, angle);
+                    var a = vector_delta.clone().applyAxisAngle(z_axis, angle);
                     // var a = vector_delta.clone().applyAxisAngle(axis_z, angle);
                     endpoint.addVectors(startpoint, a);
 
@@ -144,31 +158,31 @@ export class LSystem {
                     break;
                 }
                 case '+': {
-                    currentUp.applyMatrix3(this.#generateYawMatrix(thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generateYawMatrix(thetaR));
                     break;
                 }
                 case '-': {
-                    currentUp.applyMatrix3(this.#generateYawMatrix(-thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generateYawMatrix(-thetaR));
                     break;
                 }
                 case '&': {
-                    currentUp.applyMatrix3(this.#generatePitchMatrix(-thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generatePitchMatrix(-thetaR));
                     break;
                 }
                 case '^': {
-                    currentUp.applyMatrix3(this.#generatePitchMatrix(thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generatePitchMatrix(thetaR));
                     break;
                 }
                 case '/': {
-                    currentUp.applyMatrix3(this.#generateRollMatrix(thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generateRollMatrix(thetaR));
                     break;
                 }
                 case '\\': {
-                    currentUp.applyMatrix3(this.#generateRollMatrix(-thetaR));
+                    currentUp = currentUp.applyMatrix3(this.#generateRollMatrix(-thetaR));
                     break;
                 }
                 case '|': {
-                    currentUp.applyMatrix3(this.#generateYawMatrix(180));
+                    currentUp = currentUp.applyMatrix3(this.#generateYawMatrix(180));
                     break;
                 }
                 case '[': {
