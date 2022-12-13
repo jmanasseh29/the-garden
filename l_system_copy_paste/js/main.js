@@ -10,8 +10,8 @@ var ic = 0x1000000;
 var random_color = '#0';
 
 let ruleMap1 = {
-    "F": 'FF-[-F+F+F]+[+F-F-F]',
-    // "F": 'F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]',
+    // "F": 'FF-[-F+F+F]+[+F-F-F]',
+    "F": 'F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]',
     "X": "X",
     "b": "bb"
 }
@@ -147,107 +147,14 @@ function getRandomColor() {
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 }
 
-/**
- * 
- * @param {*} geom 
- * @param {*} x_init 
- * @param {*} y_init 
- * @param {*} z_init 
- * @returns 
- */
-function DrawTheTree(geom, x_init, y_init, z_init) {
-    let geometry = geom;
-    system.generate();
-    let Wrule = system.currSentence;
-    let n = Wrule.length;
-    let stackX = []; let stackY = []; let stackZ = []; let stackA = [];
-    let stackV = []; let stackAxis = [];
-
-    let theta = system.theta * Math.PI / 180;
-    let scale = system.scale;
-    let angle = system.angle * Math.PI / 180;
-
-    var x0 = x_init; var y0 = y_init; var z0 = z_init;
-    var x; var y; var z;
-    var rota = 0, rota2 = 0,
-        deltarota = 18 * Math.PI / 180;
-    var newbranch = false;
-    var axis_x = new THREE.Vector3(1, 0, 0);
-    var axis_y = new THREE.Vector3(0, 1, 0);
-    var axis_z = new THREE.Vector3(0, 0, 1);
-    var zero = new THREE.Vector3(0, 0, 0);
-    var axis_delta = new THREE.Vector3(),
-        prev_startpoint = new THREE.Vector3();
-
-    var startpoint = new THREE.Vector3(x0, y0, z0),
-        endpoint = new THREE.Vector3();
-    var bush_mark;
-    var vector_delta = new THREE.Vector3(scale, scale, 0);
-
-    for (var j = 0; j < n; j++) {
-        if (system.scaleRandomness > 0) {
-            scale = system.scale + (system.scaleRandomness * (Math.random() - 0.5))
-            vector_delta = new THREE.Vector3(scale, scale, 0);
-        }
-        var a = Wrule[j];
-        switch (a) {
-            case '+':
-                angle -= theta + (system.thetaRandomness * (Math.random() - 0.5) * 0.1);
-                break;
-            case '-':
-                angle += theta + (system.thetaRandomness * (Math.random() - 0.5) * 0.1);;
-                break;
-            case 'F':
-                var a = vector_delta.clone().applyAxisAngle(axis_y, angle);
-                // var a = vector_delta.clone().applyAxisAngle(axis_z, angle);
-                endpoint.addVectors(startpoint, a);
-
-                geometry.vertices.push(startpoint.clone());
-                geometry.vertices.push(endpoint.clone());
-
-                prev_startpoint.copy(startpoint);
-                startpoint.copy(endpoint);
-                axis_delta = new THREE.Vector3().copy(a).normalize();
-                rota += deltarota;// + (5.0 - Math.random()*10.0);
-                break;
-            case 'L':
-                endpoint.copy(startpoint);
-                endpoint.add(new THREE.Vector3(0, scale * 1.5, 0));
-                var vector_delta2 = new THREE.Vector3().subVectors(endpoint, startpoint);
-                vector_delta2.applyAxisAngle(axis_delta, rota2);
-                endpoint.addVectors(startpoint, vector_delta2);
-
-                geometry.vertices.push(startpoint.clone());
-                geometry.vertices.push(endpoint.clone());
-
-                rota2 += 45 * Math.PI / 180;
-                break;
-            case '%':
-                break;
-            case '[':
-                stackV.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
-                stackA[stackA.length] = angle;
-                break;
-            case ']':
-                var point = stackV.pop();
-                startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
-                angle = stackA.pop();
-                break;
-        }
-        bush_mark = a;
-    }
-    return geometry;
-}
-
-
-function setRules0() {
-    // system.axiom = "X";
-    // system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
-    // system.iterations = 5;
-    // system.angle = 0;
-    // system.theta = 30;
-    // system.scale = 6;
-}
+// function setRules0() {
+//     // system.axiom = "X";
+//     // system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
+//     // system.iterations = 5;
+//     // system.angle = 0;
+//     // system.theta = 30;
+//     // system.scale = 6;
+// }
 
 var camera, scene, renderer, controls;
 var plant, mesh, currentTreeInScene;
@@ -320,7 +227,7 @@ function init() {
 function drawDefaultTree(material) {
     scene.remove(plant);
     var line_geometry = new THREE.Geometry();
-    line_geometry = DrawTheTree(line_geometry, 0, -150, 0);
+    line_geometry = system.generateMesh(line_geometry, 0, -70, 0);
     // plant = new THREE.Mesh(line_geometry, material);
     plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
@@ -329,11 +236,13 @@ function drawDefaultTree(material) {
 function addTree(x, y) {
     var material = new THREE.LineBasicMaterial({ color: 0xaaa });
     var line_geometry = new THREE.Geometry();
-    line_geometry = DrawTheTree(line_geometry, x, y, 0);
+    line_geometry = system.generateMesh(line_geometry, x, y, 0);
 }
 
 function onWindowResize() {
+
 }
+
 function animate() {
     requestAnimationFrame(animate);
     const t0 = Date.now() / 60;
