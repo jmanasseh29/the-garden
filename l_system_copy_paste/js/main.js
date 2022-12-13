@@ -61,6 +61,15 @@ let ruleMap9 = {
     'F': '[F]-F'
 }
 
+let ruleMap10 = {
+    'F': '>F[++F]-<F[--F]+>>F'
+}
+
+let ruleMap11 = {
+    'X': 'F+[[X]-X]-F[-FX]+X',
+    'F': 'FF'
+}
+
 // function Params() {
 //     this.iterations = 2;
 //     this.theta = 18;
@@ -90,8 +99,10 @@ function Colors() {
 // var colors = new Colors();
 // let system = new LSystem(ruleMap1, "F");
 // let system = new LSystem(ruleMap7, "F-F-F-F");
-let system = new LSystem(ruleMap8, "X");
+// let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
+// let system = new LSystem(ruleMap10, "F");
+let system = new LSystem(ruleMap11, "X");
 
 
 var clear = {
@@ -227,7 +238,7 @@ function init() {
 function drawDefaultTree(material) {
     scene.remove(plant);
     var line_geometry = new THREE.Geometry();
-    line_geometry = system.generateMesh(line_geometry, 0, -70, 0);
+    line_geometry = system.generateMesh(0, -70, 0);
     // plant = new THREE.Mesh(line_geometry, material);
     plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
@@ -236,7 +247,7 @@ function drawDefaultTree(material) {
 function addTree(x, y) {
     var material = new THREE.LineBasicMaterial({ color: 0xaaa });
     var line_geometry = new THREE.Geometry();
-    line_geometry = system.generateMesh(line_geometry, x, y, 0);
+    line_geometry = system.generateMesh(x, y, 0);
 }
 
 function onWindowResize() {
