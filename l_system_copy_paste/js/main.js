@@ -91,6 +91,10 @@ let ruleMap15 = {
     'R': ">>TF[^FR]C[&FRFR]"
 }
 
+let ruleMap16 = {
+    'X': '[-FX]+FX'
+}
+
 function Colors() {
     this.background = "#000000";
     this.general = "#111faa";
@@ -102,6 +106,7 @@ function Colors() {
 // var params = new Params();
 // var colors = new Colors();
 // let system = new LSystem(ruleMap1, "F");
+// let system = new LSystem(ruleMap6, "F");
 // let system = new LSystem(ruleMap7, "F-F-F-F");
 // let system = new LSystem(ruleMap8, "X");
 // let system = new LSystem(ruleMap9, "X");
@@ -109,8 +114,9 @@ function Colors() {
 // let system = new LSystem(ruleMap11, "X");
 // let system = new LSystem(ruleMap12, "X");
 // let system = new LSystem(ruleMap13, "R");
-let system = new LSystem(ruleMap14, "R");
+// let system = new LSystem(ruleMap14, "R");
 // let system = new LSystem(ruleMap15, "R");
+let system = new LSystem(ruleMap16, "FX");
 
 var clear = {
     clear: function () {
@@ -202,7 +208,7 @@ function init() {
     // setRules0();
 
     // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
-    const material = new THREE.MeshPhongMaterial({ color: 0x00ffff })
+    const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
     drawDefaultTree(material);
     scene.add(plant);
 
@@ -229,7 +235,7 @@ function init() {
     treeFolder.add(system, 'thicknessDecay', 0.1, 1)
         .onChange(() => { drawDefaultTree(material); })
         .name('Thickness Decay');
-    treeFolder.add(system, 'iterations', 0, 5)
+    treeFolder.add(system, 'iterations', 0, 10)
         .step(1)
         .onChange(() => { drawDefaultTree(material); })
         .name('Age');

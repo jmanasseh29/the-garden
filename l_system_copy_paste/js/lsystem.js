@@ -34,8 +34,8 @@ export class LSystem {
 
     generate() {
         this.currSentence = this.#axiom;
-        let newString = "";
         for (let n = 0; n < this.iterations; n++) {
+            let newString = "";
             for (let i = 0; i < this.currSentence.length; i++) {
                 const c = this.currSentence.charAt(i);
                 if (this.#rules.hasOwnProperty(c)) {
