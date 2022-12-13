@@ -4,14 +4,13 @@ const float IOR_WATER = 1.333;
 const vec3 abovewaterColor = vec3(0.25, 1.0, 1.25);
 const vec3 underwaterColor = vec3(0.4, 0.9, 1.0);
 
+const float waterWidth = 16.0;
 const float poolHeight = 1.0;
-const float waterWidth = 8.0;
 
 uniform vec3 light;
 uniform sampler2D floor;
 uniform sampler2D causticTex;
 uniform sampler2D water;
-
 
 vec2 intersectCube(vec3 origin, vec3 ray, vec3 cubeMin, vec3 cubeMax) {
   vec3 tMin = (cubeMin - origin) / ray;
@@ -43,7 +42,7 @@ vec3 getWallColor(vec3 point) {
     normal = vec3(0.0, 1.0, 0.0);
   }*/
 
-  scale /= length(point); /* pool ambient occlusion */
+  //scale /= length(point); /* pool ambient occlusion */
 
   /* caustics */
   //vec3 refractedLight = -refract(-light, vec3(0.0, 1.0, 0.0), IOR_AIR / IOR_WATER);

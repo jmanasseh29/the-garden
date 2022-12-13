@@ -3,7 +3,8 @@ const canvas = document.getElementById('canvas');
 const width = canvas.width;
 const height = canvas.height;
 
-const WATER_WIDTH = 8;
+const WATER_WIDTH = 8.0;
+const POOL_HEIGHT = 1.0;
 
 // Colors
 const black = new THREE.Color('black');
@@ -25,8 +26,11 @@ loadFile('shaders/utils.glsl').then((utils) => {
 
   // Create Renderer
   const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 100);
-  camera.position.set(0.426, 0.677, -2.095);
+  // camera.position.set(0.426, 0.677, -2.095);
+  // camera.rotation.set(2.828, 0.191, 3.108);
+  camera.position.set(WATER_WIDTH/2.0, POOL_HEIGHT*2, -WATER_WIDTH/2.0);
   camera.rotation.set(2.828, 0.191, 3.108);
+
 
   const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true});
   renderer.setSize(width, height);
@@ -216,7 +220,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
               floor: { value: floor },
               water: { value: null },
               // causticTex: { value: null },
-              underwater: { value: false },
+              underwater: { value: false }
           },
           vertexShader: vertexShader,
           fragmentShader: fragmentShader,
