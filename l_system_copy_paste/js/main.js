@@ -2,6 +2,7 @@ import { LSystem } from './lsystem.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import { GUI } from './dat.gui.module.js';
+// import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/addons/effects/OutlineEffect.js';
 
 var boundsx, boundsy,
     mouse = {
@@ -90,29 +91,12 @@ let ruleMap15 = {
     'R': ">>TF[^FR]C[&FRFR]"
 }
 
-// function Params() {
-//     this.iterations = 2;
-//     this.theta = 18;
-//     this.thetaRandomness = 0;
-//     this.angle = 0;
-//     this.scale = 4;
-//     this.scaleRandomness = 0;
-//     this.constantWidth = true;
-//     this.deltarota = 30;
-// }
-
 function Colors() {
     this.background = "#000000";
     this.general = "#111faa";
     this.random = true;
     this.alpha = 0.8;
 }
-
-// function Rules() {
-//     this.axiom = 'X';
-//     this.mainRule = 'FF-[-F+F+F]+[+F-F-F]';
-//     this.Rule2 = '';
-// }
 
 // var rules = new Rules();
 // var params = new Params();
@@ -180,15 +164,6 @@ function getRandomColor() {
     var a = system.alpha;
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 }
-
-// function setRules0() {
-//     // system.axiom = "X";
-//     // system.mainRule = "F-F[-F+F[LLLLLLLL]]++F[+F[LLLLLLLL]]--F[+F[LLLLLLLL]]";
-//     // system.iterations = 5;
-//     // system.angle = 0;
-//     // system.theta = 30;
-//     // system.scale = 6;
-// }
 
 var camera, scene, renderer, controls;
 var plant, mesh, currentTreeInScene;
