@@ -56,7 +56,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
   // Ray caster
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  const targetgeometry = new THREE.PlaneGeometry(WATER_WIDTH, WATER_WIDTH);
+  const targetgeometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
   for (let vertex of targetgeometry.vertices) {
     vertex.z = - vertex.y;
     vertex.y = 0.;
@@ -226,7 +226,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
   class Water {
 
     constructor() {
-      this.geometry = new THREE.PlaneBufferGeometry(WATER_WIDTH, WATER_WIDTH, 200, 200);
+      this.geometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
 
       const shadersPromises = [
         loadFile('shaders/water/vertex.glsl'),
