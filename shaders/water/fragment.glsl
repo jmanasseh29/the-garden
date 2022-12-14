@@ -60,7 +60,7 @@ void main() {
   } else {
     vec3 reflectedRay = reflect(incomingRay, normal);
     vec3 refractedRay = refract(incomingRay, normal, IOR_AIR / IOR_WATER);
-    float fresnel = mix(0.25, 1.0, pow(1.0 - dot(normal, -incomingRay), 3.0));
+    float fresnel = mix(0.6, 2.0, pow(1.0 - dot(normal, -incomingRay), 5.0)); //first is blackness, second one can kinda sunset
 
     vec3 reflectedColor = getSurfaceRayColor(pos, reflectedRay, abovewaterColor);
     vec3 refractedColor = getSurfaceRayColor(pos, refractedRay, abovewaterColor);

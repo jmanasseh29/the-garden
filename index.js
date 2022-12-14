@@ -66,12 +66,16 @@ loadFile('shaders/utils.glsl').then((utils) => {
   // Textures
   const textureloader = new THREE.TextureLoader();
 
-  const floor = textureloader.load('sand_floor_2.jpg');
+  const floor = textureloader.load('sand_floor.jpg');
 
   class WaterSimulation {
 
     constructor() {
       const DETAIL_BITS = 128 * WATER_WIDTH;
+      const WATER_SPEED = .002;   // could be changed
+
+      this.ambientDropFreq = 40;    // could be changed
+      this.step = 0;
 
       this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
 
@@ -103,7 +107,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
 
         const normalMaterial = new THREE.RawShaderMaterial({
           uniforms: {
-              delta: { value: [1.0 / DETAIL_BITS, 1.0 / DETAIL_BITS] },  // TODO: Remove this useless uniform and hardcode it in shaders?
+              delta: { value: [WATER_SPEED, WATER_SPEED] },  // TODO: Remove this useless uniform and hardcode it in shaders?
               texture: { value: null },
           },
           vertexShader: vertexShader,
@@ -112,7 +116,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
 
         const updateMaterial = new THREE.RawShaderMaterial({
           uniforms: {
-              delta: { value: [1.0 / DETAIL_BITS, 1.0 / DETAIL_BITS] },  // TODO: Remove this useless uniform and hardcode it in shaders?
+              delta: { value: [WATER_SPEED, WATER_SPEED] },  // TODO: Remove this useless uniform and hardcode it in shaders?
               texture: { value: null },
           },
           vertexShader: vertexShader,
@@ -125,7 +129,12 @@ loadFile('shaders/utils.glsl').then((utils) => {
       });
     }
 
-    // Add a drop of water at the (x, y) coordinate (in the range [-1, 1])
+    // Set frame frequency of random drops
+    setAmbientDropFreq(ambientDropFreq) {
+      this.ambientDropFreq = ambientDropFreq;
+    }
+
+    // Add a drop of water at the (x, y) coordinate
     addDrop(renderer, x, y, radius, strength) {
       this._dropMesh.material.uniforms['center'].value = [x, y];
       this._dropMesh.material.uniforms['radius'].value = radius;
@@ -134,7 +143,20 @@ loadFile('shaders/utils.glsl').then((utils) => {
       this._render(renderer, this._dropMesh);
     }
 
-    stepSimulation(renderer) {
+    addRandomDrop() {
+      this.addDrop(
+        renderer,
+        Math.random() * WATER_WIDTH - WATER_WIDTH/2.0, Math.random() * WATER_WIDTH - WATER_WIDTH/2.0,
+        0.03, 0.02
+      );
+    }
+
+    stepSimulation(renderer, ambientDrops = false) {
+      this.step++;
+      if (ambientDrops && this.step > this.ambientDropFreq) {
+        this.addRandomDrop();
+        this.step = 0;
+      }
       this._render(renderer, this._updateMesh);
     }
 
@@ -150,7 +172,6 @@ loadFile('shaders/utils.glsl').then((utils) => {
       mesh.material.uniforms['texture'].value = oldTexture.texture;
       renderer.setRenderTarget(newTexture);
 
-      // TODO Camera is useless here, what should be done?
       renderer.render(mesh, this._camera);
 
       this.texture = newTexture;
@@ -159,47 +180,47 @@ loadFile('shaders/utils.glsl').then((utils) => {
   }
 
 
-  // class Caustics {
+  class Caustics {
 
-  //   constructor(lightFrontGeometry) {
-  //     this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
+    constructor(lightFrontGeometry) {
+      this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
 
-  //     this._geometry = lightFrontGeometry;
+      this._geometry = lightFrontGeometry;
 
-  //     this.texture = new THREE.WebGLRenderTarget(1024, 1024, {type: THREE.UNSIGNED_BYTE});
+      this.texture = new THREE.WebGLRenderTarget(1024, 1024, {type: THREE.UNSIGNED_BYTE});
 
-  //     const shadersPromises = [
-  //       loadFile('shaders/caustics/vertex.glsl'),
-  //       loadFile('shaders/caustics/fragment.glsl')
-  //     ];
+      const shadersPromises = [
+        loadFile('shaders/caustics/vertex.glsl'),
+        loadFile('shaders/caustics/fragment.glsl')
+      ];
 
-  //     this.loaded = Promise.all(shadersPromises)
-  //         .then(([vertexShader, fragmentShader]) => {
-  //       const material = new THREE.RawShaderMaterial({
-  //         uniforms: {
-  //             light: { value: light },
-  //             water: { value: null },
-  //         },
-  //         vertexShader: vertexShader,
-  //         fragmentShader: fragmentShader,
-  //       });
+      this.loaded = Promise.all(shadersPromises)
+          .then(([vertexShader, fragmentShader]) => {
+        const material = new THREE.RawShaderMaterial({
+          uniforms: {
+              light: { value: light },
+              water: { value: null },
+          },
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+        });
 
-  //       this._causticMesh = new THREE.Mesh(this._geometry, material);
-  //     });
-  //   }
+        this._causticMesh = new THREE.Mesh(this._geometry, material);
+      });
+    }
 
-  //   update(renderer, waterTexture) {
-  //     this._causticMesh.material.uniforms['water'].value = waterTexture;
+    update(renderer, waterTexture) {
+      this._causticMesh.material.uniforms['water'].value = waterTexture;
 
-  //     renderer.setRenderTarget(this.texture);
-  //     renderer.setClearColor(black, 0);
-  //     renderer.clear();
+      renderer.setRenderTarget(this.texture);
+      renderer.setClearColor(black, 0);
+      renderer.clear();
 
-  //     // TODO Camera is useless here, what should be done?
-  //     renderer.render(this._causticMesh, this._camera);
-  //   }
+      // TODO Camera is useless here, what should be done?
+      renderer.render(this._causticMesh, this._camera);
+    }
 
-  // }
+  }
 
 
   class Water {
@@ -219,7 +240,7 @@ loadFile('shaders/utils.glsl').then((utils) => {
               light: { value: light },
               floor: { value: floor },
               water: { value: null },
-              // causticTex: { value: null },
+              causticTex: { value: null },
               underwater: { value: false }
           },
           vertexShader: vertexShader,
@@ -231,10 +252,10 @@ loadFile('shaders/utils.glsl').then((utils) => {
       });
     }
 
-    draw(renderer, waterTexture) {//, causticsTexture) {
+    draw(renderer, waterTexture, causticsTexture) {
       
       this.material.uniforms['water'].value = waterTexture;
-      // this.material.uniforms['causticTex'].value = causticsTexture;
+      this.material.uniforms['causticTex'].value = causticsTexture;
 
       this.material.side = THREE.FrontSide;
       this.material.uniforms['underwater'].value = true;
@@ -249,25 +270,25 @@ loadFile('shaders/utils.glsl').then((utils) => {
 
   const waterSimulation = new WaterSimulation();
   const water = new Water();
-  // const caustics = new Caustics(water.geometry);
+  const caustics = new Caustics(water.geometry);
 
 
   // Main rendering loop
   function animate() {
-    waterSimulation.stepSimulation(renderer);
+    waterSimulation.stepSimulation(renderer, true);
     waterSimulation.updateNormals(renderer);
 
     const waterTexture = waterSimulation.texture.texture;
 
-    // caustics.update(renderer, waterTexture);
+    caustics.update(renderer, waterTexture);
 
-    // const causticsTexture = caustics.texture.texture;
+    const causticsTexture = caustics.texture.texture;
 
     renderer.setRenderTarget(null);
     renderer.setClearColor(white, 1);
     renderer.clear();
 
-    water.draw(renderer, waterTexture)//, causticsTexture);
+    water.draw(renderer, waterTexture, causticsTexture);
 
     controls.update();
 
@@ -289,18 +310,14 @@ loadFile('shaders/utils.glsl').then((utils) => {
     }
   }
 
-  const loaded = [waterSimulation.loaded, water.loaded];//, caustics.loaded, pool.loaded, debug.loaded];
+  const loaded = [waterSimulation.loaded, caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
 
   Promise.all(loaded).then(() => {
     canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
 
-    // for (var i = 0; i < 20; i++) {
-    //   waterSimulation.addDrop(
-    //     renderer,
-    //     Math.random() * 2 - 1, Math.random() * 2 - 1,
-    //     0.03, (i & 1) ? 0.02 : -0.02
-    //   );
-    // }
+    for (var i = 0; i < 50; i++) {
+      waterSimulation.addRandomDrop();
+    }
 
     animate();
   });
