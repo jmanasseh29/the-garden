@@ -120,12 +120,16 @@ export class WaterSimulation {
         const oldTexture = this.texture;
         const newTexture = this.texture === this._textureA ? this._textureB : this._textureA;
 
-        mesh.material.uniforms['texture'].value = oldTexture.texture;
-        renderer.setRenderTarget(newTexture);
+        try {
+            mesh.material.uniforms['texture'].value = oldTexture.texture;
+            renderer.setRenderTarget(newTexture);
 
-        renderer.render(mesh, this._camera);
+            renderer.render(mesh, this._camera);
 
-        this.texture = newTexture;
+            this.texture = newTexture;
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 }
@@ -158,17 +162,18 @@ export class Water {
             });
     }
 
-    draw(renderer, waterTexture, camera) {
-
+    draw(waterTexture) {
         this.material.uniforms['water'].value = waterTexture;
 
-        this.material.side = THREE.FrontSide;
-        this.material.uniforms['underwater'].value = true;
-        renderer.render(this.mesh, camera);
+        // this.material.side = THREE.FrontSide;
+        // this.material.uniforms['underwater'].value = true;
+        // renderer.render(this.mesh, camera);
+        // return this.mesh;
 
         this.material.side = THREE.BackSide;
         this.material.uniforms['underwater'].value = false;
-        renderer.render(this.mesh, camera);
+        return this.mesh;
+        // renderer.render(this.mesh, camera);
     }
 
 }

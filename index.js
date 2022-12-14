@@ -1,4 +1,4 @@
-import { TrackballControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/TrackballControls.js';
+import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
 import { Water, WaterSimulation } from './l_system_copy_paste/js/water.js';
 
@@ -23,7 +23,7 @@ function loadFile(filename) {
   });
 }
 
-let utils, camera, renderer, light, controls;
+let utils, camera, renderer, light, controls, scene;
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
@@ -33,6 +33,9 @@ async function waterInit() {
   utils = await loadFile('shaders/utils.glsl');
   // Shader chunks
   THREE.ShaderChunk['utils'] = utils;
+
+  scene = new THREE.Scene();
+
   camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 100);
   // Create Renderer
   // camera.position.set(0.426, 0.677, -2.095);
@@ -46,18 +49,8 @@ async function waterInit() {
   light = [0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
 
   // Create mouse Controls
-  controls = new TrackballControls(
-    camera,
-    canvas
-  );
-
-  controls.screen.width = width;
-  controls.screen.height = height;
-
-  controls.rotateSpeed = 2.5;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.9;
-  controls.dynamicDampingFactor = 0.9;
+  controls = new OrbitControls(camera, canvas);
+  controls.maxPolarAngle = Math.PI / 2;
 
   // Ray caster
   raycaster = new THREE.Raycaster();
@@ -122,11 +115,14 @@ function animate() {
   renderer.setClearColor(white, 1);
   renderer.clear();
 
-  water.draw(renderer, waterTexture, camera);//, causticsTexture);
+  const waterMesh = water.draw(waterTexture);
+
+  scene.add(waterMesh);
+
+  renderer.render(scene, camera);
 
   controls.update();
-
-  window.requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 }
 
 function onMouseMove(event) {
