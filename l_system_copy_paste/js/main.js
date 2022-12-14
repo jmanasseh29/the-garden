@@ -278,6 +278,7 @@ function init() {
 }
 
 function drawDefaultTree(material, leafMat, regenTree) {
+    scene.remove(plant);
     scene.remove(stem);
     // var line_geometry = new THREE.BufferGeometry();
     if (regenTree) { system.generate(); }
