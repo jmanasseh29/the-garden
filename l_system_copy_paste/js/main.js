@@ -270,9 +270,10 @@ function init() {
     treeFolder.open();
 
     const randomFolder = gui.addFolder("Stochasticity Settings");
-    randomFolder.add(system, 'thetaRandomness', 0, 10)
+    randomFolder.add(system, 'wiggleRandomness', 0, 1)
+        .step(0.01)
         .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
-        .name('Angle');
+        .name('Wiggle');
     randomFolder.add(system, 'scaleRandomness', 0, 10)
         .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Length');

@@ -19,6 +19,7 @@ export class LSystem {
     scaleRandomness = 0;
     thickness = 1;
     thicknessDecay = 0.9;
+    wiggleRandomness = 0;
     lenDecay = 1;
     deltarota = 300;
 
@@ -94,6 +95,14 @@ export class LSystem {
             branchLen = lenMultiplier
                 * (this.scale + (this.scaleRandomness * (Math.random() - 0.5)));
             // }
+            const randomizedXUp = currentUp.x
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+            const randomizedYUp = currentUp.y
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+            const randomizedZUp = currentUp.z
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+
+            currentUp = new THREE.Vector3(randomizedXUp, randomizedYUp, randomizedZUp).normalize();
             // theta = this.theta + (this.thetaRandomness * (Math.random() - 0.5));
             let a = this.currSentence[i];
             switch (a) {
