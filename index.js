@@ -84,7 +84,7 @@ async function waterInit() {
 
   onWindowResize();
 
-  light = [0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
+  light = [0, 0.5, -0.5];//[0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
 
   // Ray caster
   raycaster = new THREE.Raycaster();
@@ -129,7 +129,7 @@ async function waterInit() {
   light2.position.set(0, 100, -200);
   plantScene.add(light2);
   const directionalLight = new THREE.DirectionalLight(0xffffff);
-  directionalLight.position.set(0, 0.5, -0.5);
+  directionalLight.position.set(light);
   directionalLight.position.normalize();
   plantScene.add(directionalLight);
   light2.position.y = 100;
