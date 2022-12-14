@@ -3,6 +3,7 @@ import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
 import { Water, WaterSimulation } from './l_system_copy_paste/js/water.js';
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
+import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
 
 const canvas = document.getElementById('canvas');
 
@@ -33,8 +34,8 @@ function loadFile(filename) {
   });
 }
 
-let utils, camera, renderer, light, controls, scene;
-const plantScene = new THREE.Group();
+let utils, camera, renderer, light, controls, scene, outlineEffect;
+const plantScene = new THREE.Scene();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
@@ -70,6 +71,13 @@ async function waterInit() {
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.autoClear = false;
+
+  outlineEffect = new OutlineEffect(renderer, {
+    defaultThickness: 0.005,
+    defaultColor: [0, 0, 0],
+    defaultAlpha: 0.5,
+    defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
+  });
 
   onWindowResize();
 
@@ -153,7 +161,7 @@ async function waterInit() {
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
-  const material = new THREE.MeshToonMaterial({color: 0x6e1901});
+  const material = new THREE.MeshToonMaterial({ color: 0x6e1901 });
   const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture
@@ -245,7 +253,8 @@ function animate() {
 
   scene.add(waterMesh);
 
-  renderer.render(scene, camera);
+  outlineEffect.render(scene, camera);
+  // renderer.render(scene);
 
   controls.update();
   requestAnimationFrame(animate);
