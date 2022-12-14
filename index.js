@@ -69,8 +69,9 @@ async function waterInit() {
   camera.position.y = 150;
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-  renderer.setSize(width, height);
   renderer.autoClear = false;
+
+  onWindowResize();
 
   light = [0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
 
@@ -112,7 +113,7 @@ async function waterInit() {
   waterSimulation = new WaterSimulation(renderer);
   water = new Water(light, floor);
 
-  scene.background = new THREE.Color(0xfffbdb);
+  scene.background = new THREE.Color(0xfaf6e6);
   const light2 = new THREE.PointLight(0xffffff, 1, 100);
   light2.position.set(0, 100, -200);
   plantScene.add(light2);
@@ -125,12 +126,21 @@ async function waterInit() {
 
   // setRules0();
   let floorGeo = new THREE.PlaneBufferGeometry(2000, 2000, 8, 8);
-  let floorMat = new THREE.MeshBasicMaterial({ color: 0x02e80e, side: THREE.DoubleSide });
+  // let floorMat = new THREE.MeshBasicMaterial({ color: 0x02e80e, side: THREE.DoubleSide });
+  let floorMat = new THREE.MeshBasicMaterial({ color: 0xfaf6e6, side: THREE.DoubleSide });
   let ground = new THREE.Mesh(floorGeo, floorMat);
   ground.rotateX(- Math.PI / 2);
   ground.position.set(0, floorPos, 0);
 
   plantScene.add(ground);
+
+  const sunGeo = new THREE.SphereGeometry(100, 32, 16);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+
+  sun.position.set(-200, 15, -7000)
+
+  plantScene.add(sun);
 
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
@@ -161,7 +171,8 @@ async function waterInit() {
   window.addEventListener('resize', onWindowResize, false);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.maxPolarAngle = Math.PI / 2;
+  controls.maxPolarAngle = Math.PI / 2 - .1;
+  controls.target.set(0, .9, -5);
   // controls.enableDamping = true;
   // controls.dampingFactor = 0.01;
 
@@ -277,8 +288,8 @@ function drawDefaultTree(material, leafMat, regenTree) {
 function onMouseMove(event) {
   const rect = canvas.getBoundingClientRect();
 
-  mousePos.x = (event.clientX - rect.left) * 2 / width - 1;
-  mousePos.y = - (event.clientY - rect.top) * 2 / height + 1;
+  mousePos.x = (event.clientX - rect.left) * 2 / window.innerWidth - 1;
+  mousePos.y = - (event.clientY - rect.top) * 2 / window.innerHeight + 1;
 
   raycaster.setFromCamera(mousePos, camera);
 
@@ -290,5 +301,8 @@ function onMouseMove(event) {
 }
 
 function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
 
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
