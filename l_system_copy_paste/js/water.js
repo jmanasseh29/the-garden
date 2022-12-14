@@ -77,6 +77,9 @@ export class WaterSimulation {
                 this._dropMesh = new THREE.Mesh(this._geometry, dropMaterial);
                 this._normalMesh = new THREE.Mesh(this._geometry, normalMaterial);
                 this._updateMesh = new THREE.Mesh(this._geometry, updateMaterial);
+                // this._dropMesh.scale.set(20, 20, 1);
+                // this._normalMesh.scale.set(20, 20, 1);
+                // this._updateMesh.scale.set(20, 20, 1);
             });
     }
 
@@ -156,7 +159,7 @@ export class Water {
                     vertexShader: vertexShader,
                     fragmentShader: fragmentShader,
                 });
-
+                // this.geometry.scale(20, 20, 1);
                 this.mesh = new THREE.Mesh(this.geometry, this.material);
                 this.material.uniforms['floor'].value.wrapS = this.material.uniforms['floor'].value.wrapT = THREE.RepeatWrapping;
             });

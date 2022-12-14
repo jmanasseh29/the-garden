@@ -34,6 +34,7 @@ function loadFile(filename) {
 }
 
 let utils, camera, renderer, light, controls, scene;
+const plantScene = new THREE.Group();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
@@ -61,7 +62,8 @@ async function waterInit() {
   // renderer.setSize(800, 800);
   // document.body.appendChild(renderer.domElement);
 
-  camera = new THREE.PerspectiveCamera(45, 800 / 800, 1, 3000);
+  // camera = new THREE.PerspectiveCamera(45, 800 / 800, 1, 3000);
+  camera = new THREE.PerspectiveCamera(2, 800 / 800, 1, 3000);
   //camera = new THREE.Camera();
   camera.position.z = 300;
   camera.position.y = 150;
@@ -76,6 +78,8 @@ async function waterInit() {
   raycaster = new THREE.Raycaster();
   mousePos = new THREE.Vector2();
   targetgeometry = new THREE.CircleGeometry(WATER_WIDTH / 2, 200);
+  // targetgeometry.scale(20, 20, 1);
+  // targetgeometry.translate(0, -19.5, 90);
 
   // const targetgeometry = new THREE.PlaneBufferGeometry(WATER_WIDTH, WATER_WIDTH, 200, 200);
   // console.log(targetgeometry.vertices);
@@ -99,6 +103,8 @@ async function waterInit() {
   targetgeometry.setFromPoints(vertices);
 
   targetmesh = new THREE.Mesh(targetgeometry);
+  targetmesh.position.y = -19.5;
+  targetmesh.position.z = 90;
 
   // Textures
   const floor = textureloader.load('sand_floor.jpg');
@@ -109,11 +115,11 @@ async function waterInit() {
   scene.background = new THREE.Color(0xfffbdb);
   const light2 = new THREE.PointLight(0xffffff, 1, 100);
   light2.position.set(0, 100, -200);
-  scene.add(light2);
+  plantScene.add(light2);
   const directionalLight = new THREE.DirectionalLight(0xffffff);
   directionalLight.position.set(0, 0.5, -0.5);
   directionalLight.position.normalize();
-  scene.add(directionalLight);
+  plantScene.add(directionalLight);
   light2.position.y = 100;
   light2.position.z = 100;
 
@@ -124,16 +130,16 @@ async function waterInit() {
   ground.rotateX(- Math.PI / 2);
   ground.position.set(0, floorPos, 0);
 
-  scene.add(ground);
+  plantScene.add(ground);
 
-  const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
+  // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
-  // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const dummyPondMat = new THREE.MeshBasicMaterial({ color: 0x0000ff })
-  const dummyPond = new THREE.Mesh(dummyPondGeo, dummyPondMat);
-  dummyPond.position.y = floorPos;
-  dummyPond.position.z = 90;
-  scene.add(dummyPond);
+  // // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  // const dummyPondMat = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+  // const dummyPond = new THREE.Mesh(dummyPondGeo, dummyPondMat);
+  // dummyPond.position.y = floorPos;
+  // dummyPond.position.z = 90;
+  // plantScene.add(dummyPond);
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
@@ -144,7 +150,12 @@ async function waterInit() {
   flowerMaterial.transparent = true;
   flowerMaterial.side = THREE.DoubleSide;
   drawDefaultTree(material, flowerMaterial, true);
-  scene.add(stem);
+  plantScene.add(stem);
+
+  plantScene.scale.set(0.05, 0.05, 0.05);
+  plantScene.position.set(0, .9, -5);
+
+  scene.add(plantScene);
 
   renderer.setClearColor(0xeeeeee);
   window.addEventListener('resize', onWindowResize, false);
@@ -217,6 +228,8 @@ function animate() {
   renderer.clear();
 
   const waterMesh = water.draw(waterTexture);
+  // waterMesh.position.y = -19.5;
+  // waterMesh.position.z = 90;
 
   scene.add(waterMesh);
 
@@ -227,8 +240,8 @@ function animate() {
 }
 
 function drawDefaultTree(material, leafMat, regenTree) {
-  scene.remove(plant);
-  scene.remove(stem);
+  plantScene.remove(plant);
+  plantScene.remove(stem);
   // var line_geometry = new THREE.BufferGeometry();
   if (regenTree) { system.generate(); }
   const generatedMeshes = system.generateMesh(0, floorPos, 0);
@@ -238,7 +251,7 @@ function drawDefaultTree(material, leafMat, regenTree) {
   stem = new THREE.Mesh(line_geometry, material);
   // stem.rotateY(90);
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
-  // scene.add(stem);
+  // plantScene.add(stem);
   leafGroup = new THREE.Group();
   leaves.forEach(leafGeometry => {
     const newLeafMesh = new THREE.Mesh(leafGeometry, leafMat);
@@ -252,7 +265,7 @@ function drawDefaultTree(material, leafMat, regenTree) {
   plant.add(stem);
   plant.add(leafGroup);
 
-  scene.add(plant);
+  plantScene.add(plant);
   // let line_geometry = system.generateMesh(0, -70, 0);
   // for (const branch of line_geometry) {
   //     const branchMesh = new THREE.Mesh(branch, material);
