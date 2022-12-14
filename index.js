@@ -146,7 +146,7 @@ async function waterInit() {
   const sunMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   const sun = new THREE.Mesh(sunGeo, sunMat);
 
-  sun.position.set(-200, 15, -7000)
+  sun.position.set(-200, 0, -7000)
 
   plantScene.add(sun);
 
@@ -187,17 +187,17 @@ async function waterInit() {
 
   const gui = new GUI()
   const treeFolder = gui.addFolder("Tree Settings");
-  treeFolder.add(system, 'theta', 0, 360)
+  treeFolder.add(system, 'theta', -50, 50)
     .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
     .name('Angle');
-  treeFolder.add(system, 'scale', 0, 10)
+  treeFolder.add(system, 'scale', 0, 20)
     .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
     .name('Length');
   treeFolder.add(system, 'lenDecay', 0.1, 1)
     .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
     .step(0.01)
     .name('Length Decay');
-  treeFolder.add(system, 'thickness', 0, 5)
+  treeFolder.add(system, 'thickness', 0, 10)
     .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
     .name('Thickness');
   treeFolder.add(system, 'thicknessDecay', 0.1, 1)
@@ -208,6 +208,14 @@ async function waterInit() {
     .onChange(() => { drawDefaultTree(material, flowerMaterial, true); })
     .name('Age');
   treeFolder.open();
+
+  const leafFolder = gui.addFolder("Leaf Settings");
+  leafFolder.add(system, 'leafSize', 0, 6)
+    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .name('Size');
+  leafFolder.add(system, 'leafDecay')
+    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .name('Get Smaller');
 
   const randomFolder = gui.addFolder("Stochasticity Settings");
   randomFolder.add(system, 'wiggleRandomness', 0, 1)
