@@ -152,7 +152,8 @@ async function waterInit() {
   // plantScene.add(dummyPond);
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
-  const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
+  // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
+  const material = new THREE.MeshToonMaterial({color: 0x6e1901});
   const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture

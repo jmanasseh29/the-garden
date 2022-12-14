@@ -13,11 +13,11 @@ vec4 cellShade(float dotProd, vec4 c) {
     if (dotProd > .95) {
         c = c*vec4(1.0, 1.0, 1.0, 1.0);
     } else if (dotProd  > 0.5) {
-        c = c*vec4(.6, .6, .6, 1.0);
+        c = c*vec4(.8, .8, .8, 1.0);
     } else if (dotProd > 0.25) {
-        c = c*vec4(.4, .4, .4, 1.0);
+        c = c*vec4(.45, .35, .35, 1.0);
     } else {
-        c = c*vec4(.2, .2, .2, 1.0);
+        c = c*vec4(1.0, 1.0, 1.0, 1.0);
     }
     return c;
 }
