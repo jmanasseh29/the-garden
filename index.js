@@ -24,6 +24,11 @@ let ruleMap14 = {
   // 'F': 'F^F'
 }
 
+let ruleMap13 = {
+  'R': "F[-^R][+R]FR",
+  'F': "FF"
+}
+
 let system = new LSystem(ruleMap14, "R");
 
 function loadFile(filename) {
@@ -172,6 +177,7 @@ async function waterInit() {
 
       });
       object.scale.set(0.01, 0.01, 0.01);
+      object.position.y = 0.01;
       scene.add(object);
     },
     function (xhr) {
