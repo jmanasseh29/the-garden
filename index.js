@@ -1,6 +1,6 @@
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
-import { Water, WaterSimulation } from './l_system_copy_paste/js/water.js';
+import { Water, WaterSimulation, Caustics } from './l_system_copy_paste/js/water.js';
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
@@ -40,7 +40,7 @@ const plantScene = new THREE.Scene();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
-let water, waterSimulation;
+let water, waterSimulation, caustics;
 let stem, leafGroup, plant;
 
 let trunkColor = 0xffffff;
@@ -123,6 +123,7 @@ async function waterInit() {
 
   waterSimulation = new WaterSimulation(renderer);
   water = new Water(light, floor);
+  caustics = new Caustics(water.geometry, light);
 
   scene.background = new THREE.Color(0xfaf6e6);
   const light2 = new THREE.PointLight(0xffffff, 1, 100);
@@ -240,7 +241,7 @@ async function waterInit() {
     .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
 
-  const loaded = [waterSimulation.loaded, water.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
+  const loaded = [waterSimulation.loaded, caustics.loaded, water.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
 
   Promise.all(loaded).then(() => {
     canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
@@ -261,9 +262,9 @@ function animate() {
 
   const waterTexture = waterSimulation.texture.texture;
 
-  // caustics.update(renderer, waterTexture);
+  caustics.update(renderer, waterTexture);
 
-  // const causticsTexture = caustics.texture.texture;
+  const causticsTexture = caustics.texture.texture;
 
   renderer.setRenderTarget(null);
   renderer.setClearColor(white, 1);
