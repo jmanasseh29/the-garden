@@ -4,6 +4,8 @@ import { Water, WaterSimulation, Caustics } from './l_system_copy_paste/js/water
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
+import { OBJLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/OBJLoader.js';
+import { FBXLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/FBXLoader.js';
 
 const canvas = document.getElementById('canvas');
 
@@ -20,6 +22,11 @@ let ruleMap14 = {
   'R': "FFF[F&>-[F^R^F[+FR+&FC]R[-F-<FC]]<FR<F]",
   // 'R': "FFF[F&&>>--[F^^R^^F[++FR++&&FC]R[--F--<<FC]]<<FR<<F]",
   // 'F': 'F^F'
+}
+
+let ruleMap13 = {
+  'R': "F[-^R][+R]FR",
+  'F': "FF"
 }
 
 let system = new LSystem(ruleMap14, "R");
@@ -89,7 +96,7 @@ async function waterInit() {
   outlineEffect = new OutlineEffect(renderer, {
     defaultThickness: 0.005,
     defaultColor: [0, 0, 0],
-    defaultAlpha: 0.5,
+    defaultAlpha: 0.2,
     defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
   });
 
@@ -147,6 +154,8 @@ async function waterInit() {
   light2.position.y = 100;
   light2.position.z = 100;
 
+  //Geometry setup
+
   // setRules0();
   let floorGeo = new THREE.PlaneBufferGeometry(2000, 2000, 8, 8);
   // let floorMat = new THREE.MeshBasicMaterial({ color: 0x02e80e, side: THREE.DoubleSide });
@@ -165,6 +174,31 @@ async function waterInit() {
   sun.position.set(-200, 0, -5000);
 
   plantScene.add(sun);
+
+  const fbxLoader = new FBXLoader();
+
+  fbxLoader.load(
+    // resource URL
+    'models/rockring.fbx',
+    function (object) {
+      object.traverse(function (child) {
+
+        if (child.isMesh) {
+          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c })
+        }
+
+      });
+      object.scale.set(0.01, 0.01, 0.01);
+      object.position.y = 0.01;
+      scene.add(object);
+    },
+    function (xhr) {
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    function (error) {
+      console.log('An error happened when loading rock: ' + error);
+    }
+  );
 
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
