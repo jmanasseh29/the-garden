@@ -241,7 +241,7 @@ async function waterInit() {
     .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
 
-  const loaded = [waterSimulation.loaded, caustics.loaded, water.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
+  const loaded = [waterSimulation.loaded, water.loaded, caustics.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
 
   Promise.all(loaded).then(() => {
     canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
@@ -262,7 +262,7 @@ function animate() {
 
   const waterTexture = waterSimulation.texture.texture;
 
-  caustics.update(renderer, waterTexture);
+  const causticsMesh = caustics.update(renderer, waterTexture);
 
   const causticsTexture = caustics.texture.texture;
 
@@ -270,11 +270,13 @@ function animate() {
   renderer.setClearColor(white, 1);
   renderer.clear();
 
-  const waterMesh = water.draw(waterTexture);
+  const waterMesh = water.draw(waterTexture, causticsTexture);
   // waterMesh.position.y = -19.5;
   // waterMesh.position.z = 90;
 
+  scene.add(causticsMesh);
   scene.add(waterMesh);
+  
 
   outlineEffect.render(scene, camera);
   // renderer.render(scene);

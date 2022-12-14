@@ -154,7 +154,6 @@ export class Water {
                         floor: { value: floor },
                         water: { value: null },
                         causticTex: { value: null },
-                        underwater: { value: false }
                     },
                     vertexShader: vertexShader,
                     fragmentShader: fragmentShader,
@@ -165,16 +164,11 @@ export class Water {
             });
     }
 
-    draw(waterTexture) {
+    draw(waterTexture, causticsTexture) {
         this.material.uniforms['water'].value = waterTexture;
-
-        // this.material.side = THREE.FrontSide;
-        // this.material.uniforms['underwater'].value = true;
-        // renderer.render(this.mesh, camera);
-        // return this.mesh;
+        this.material.uniforms['causticTex'].value = causticsTexture;
 
         this.material.side = THREE.BackSide;
-        this.material.uniforms['underwater'].value = false;
         return this.mesh;
         // renderer.render(this.mesh, camera);
     }
@@ -210,15 +204,16 @@ export class Caustics {
       });
     }
 
-    update(renderer, waterTexture) {
+    update(waterTexture) {
       this._causticMesh.material.uniforms['water'].value = waterTexture;
 
-      renderer.setRenderTarget(this.texture);
-      renderer.setClearColor(black, 0);
-      renderer.clear();
+    //   renderer.setRenderTarget(this.texture);
+    //   renderer.setClearColor(black, 0);
+    //   renderer.clear();
 
+      return this._causticMesh;
       // TODO Camera is useless here, what should be done?
-      renderer.render(this._causticMesh, this._camera);
+      // renderer.render(this._causticMesh, this._camera);
     }
 
   }
