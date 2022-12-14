@@ -49,6 +49,7 @@ let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
 let water, waterSimulation;
 let stem, leafGroup, plant;
+let numGrass = 30;
 
 let trunkColor = 0xffffff;
 
@@ -176,9 +177,13 @@ async function waterInit() {
         }
 
       });
-      object.scale.set(0.01, 0.01, 0.01);
-      object.position.y = 0.01;
-      scene.add(object);
+      // object.scale.set(0.01, 0.01, 0.01);
+      // object.position.y = 0.01;
+      // scene.add(object);
+      object.scale.set(.2, .2, .2);
+      object.position.set(0, -19.5, 100);
+      // object.position.y = 0.01;
+      plantScene.add(object);
     },
     function (xhr) {
       console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -187,6 +192,24 @@ async function waterInit() {
       console.log('An error happened when loading rock: ' + error);
     }
   );
+
+  const grassTexture = textureloader.load('./img/grass/grass1.png');
+
+  for (let i = 0; i < numGrass; i++) {
+    // const grassGeo = new THREE.SphereGeometry(10, 32, 16);
+    // const grassMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const grassMat = new THREE.SpriteMaterial({ map: grassTexture });
+    // const grassMesh = new THREE.Mesh(grassGeo, grassMat);
+    const grassMesh = new THREE.Sprite(grassMat);
+
+    const xpos = (Math.random() - 0.5) * 2000;
+    const zpos = (Math.random() - 0.5) * 2000;
+    // sun.position.set(-200, -400, -5000);
+    const grassSize = (Math.random() + 1) * 15;
+    grassMesh.scale.set(grassSize, grassSize * 0.334170854);
+    grassMesh.position.set(xpos, floorPos + 10, zpos);
+    plantScene.add(grassMesh);
+  }
 
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
@@ -200,7 +223,7 @@ async function waterInit() {
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
   trunkMat = new THREE.MeshToonMaterial({ color: 0x6e1901 });
-  const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
+  const blossomTexture = textureloader.load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture
   });
@@ -248,7 +271,7 @@ async function waterInit() {
   treeFolder.add(system, 'pivot', 0, 360)
     .step(0.01)
     .onChange(() => { rotateTree(); })
-    .name('pivot');
+    .name('Pivot');
   // treeFolder.add(system, 'trunkColor', system.trunkColor)
   //   .onChange(() => {
   //     stem.material.color.setHex(dec2hex(system.trunkColor));
