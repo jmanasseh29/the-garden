@@ -19,6 +19,7 @@ export class LSystem {
     scaleRandomness = 0;
     thickness = 1;
     thicknessDecay = 0.9;
+    wiggleRandomness = 0;
     lenDecay = 1;
     deltarota = 300;
 
@@ -68,7 +69,7 @@ export class LSystem {
         // let geometry = new THREE.Geometry();
         let geom = new THREE.BufferGeometry();
         let cylinders = [];
-        this.generate();
+        let leaves = [];
         let directionStack = [];
         let vertexStack = [];
         let thicknessStack = [];
@@ -94,6 +95,14 @@ export class LSystem {
             branchLen = lenMultiplier
                 * (this.scale + (this.scaleRandomness * (Math.random() - 0.5)));
             // }
+            const randomizedXUp = currentUp.x
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+            const randomizedYUp = currentUp.y
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+            const randomizedZUp = currentUp.z
+                + (this.wiggleRandomness * (Math.random() - 0.5));
+
+            currentUp = new THREE.Vector3(randomizedXUp, randomizedYUp, randomizedZUp).normalize();
             // theta = this.theta + (this.thetaRandomness * (Math.random() - 0.5));
             let a = this.currSentence[i];
             switch (a) {
@@ -114,8 +123,8 @@ export class LSystem {
                         baseThickness, branchLen, 16);
                     const position = this.getPointInBetweenByLen(startpoint, endpoint, branchLen / 2);
                     const quaternion = new THREE.Quaternion()
-                    const cylinderUpAxis = new THREE.Vector3(0, 1, 0)
-                    quaternion.setFromUnitVectors(cylinderUpAxis, currentUp)
+                    // const cylinderUpAxis = new THREE.Vector3(0, 1, 0)
+                    quaternion.setFromUnitVectors(y_axis, currentUp)
                     segment.applyQuaternion(quaternion)
                     // segment.lookAt(currentUp);
                     // segment.rotateX(currentUp.x);
@@ -159,25 +168,37 @@ export class LSystem {
                         .applyAxisAngle(y_axis, -theta).normalize()
                     break;
                 }
-                case '[':
+                case '[': {
                     vertexStack.push(new THREE.Vector3(startpoint.x, startpoint.y, startpoint.z));
                     directionStack[directionStack.length] = currentUp.clone();
                     lenStack.push(lenMultiplier);
                     thicknessStack.push(currentThickness);
                     break;
-                case ']':
+                }
+                case ']': {
                     let point = vertexStack.pop();
                     startpoint.copy(new THREE.Vector3(point.x, point.y, point.z));
                     currentUp = directionStack.pop();
                     lenMultiplier = lenStack.pop();
                     currentThickness = thicknessStack.pop();
                     break;
+                }
+                case 'R': {
+                    const leaf = new THREE.CircleGeometry(2, 16);
+                    const quaternion = new THREE.Quaternion()
+                    quaternion.setFromUnitVectors(y_axis, currentUp)
+                    leaf.applyQuaternion(quaternion)
+                    leaf.lookAt(currentUp);
+                    leaf.translate(endpoint.x, endpoint.y, endpoint.z);
+                    leaves.push(leaf);
+                    break;
+                }
             }
         }
         // return geometry;
         geom = BufferGeometryUtils.mergeBufferGeometries(cylinders, false);
         // geom.computeBoundingBox();
-        return geom;
+        return [geom, leaves];
         // return cylinders;
     }
 }
