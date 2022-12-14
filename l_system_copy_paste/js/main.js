@@ -233,6 +233,7 @@ function init() {
         map: blossomTexture
     });
     flowerMaterial.transparent = true;
+    flowerMaterial.side = THREE.DoubleSide;
     drawDefaultTree(material, flowerMaterial, true);
     scene.add(stem);
 
