@@ -2,7 +2,10 @@ import { LSystem } from './lsystem.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import { GUI } from './dat.gui.module.js';
-// import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/addons/effects/OutlineEffect.js';
+// import {EffectComposer} from 'https://cdn.jsdelivr.net/npm/three@0.122/examples/jsm/postprocessing/EffectComposer.js';
+// import {RenderPass} from 'https://cdn.jsdelivr.net/npm/three@0.122/examples/jsm/postprocessing/RenderPass.js';
+// import {OutlinePass} from 'https://cdn.jsdelivr.net/npm/three@0.122/examples/jsm/postprocessing/OutlinePass.js';
+// import OutlineEffect from '//cdn.skypack.dev/three@0.132.2/examples/js/effects/OutlineEffect.js';
 
 var boundsx, boundsy,
     mouse = {
@@ -171,7 +174,7 @@ function getRandomColor() {
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 }
 
-var camera, scene, renderer, controls;
+var camera, scene, renderer, controls, composer;
 var plant, mesh, currentTreeInScene;
 var material;
 var tmp = new THREE.Vector3();
@@ -192,6 +195,10 @@ function init() {
     camera.position.y = 150;
 
     scene = new THREE.Scene();
+    // composer = new EffectComposer(renderer);
+    // composer.addPass(new RenderPass(scene, camera));
+    // var outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+    // composer.addPass(outlinePass);
     //camera.lookAt(scene.position)
 
     scene.background = new THREE.Color(0xfffbdb);
@@ -208,7 +215,10 @@ function init() {
     // setRules0();
 
     // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
-    const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
+    // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
+    const mat1 = new THREE.MeshToonMaterial({color: 0x6e1901});
+    const material = mat1;
+    // const outlines = new OutlineEffect(renderer);
     drawDefaultTree(material);
     scene.add(plant);
 
@@ -282,7 +292,9 @@ function animate() {
     // plant.rotation.y += 0.01;
     // camera.lookAt(plant.position);
     renderer.render(scene, camera);
-    // controls.update();
+    // composer.render(scene, camera);
+    // outlines.render( scene, camera );
+    controls.update();
 }
 
 window.onkeypress = function (e) {
