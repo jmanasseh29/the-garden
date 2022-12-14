@@ -101,7 +101,7 @@ export class WaterSimulation {
         this.addDrop(
             this.renderer,
             Math.random() * WATER_WIDTH - WATER_WIDTH / 2.0, Math.random() * WATER_WIDTH - WATER_WIDTH / 2.0,
-            0.03, 0.02
+            0.03, 0.04
         );
     }
 

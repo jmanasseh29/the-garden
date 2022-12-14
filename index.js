@@ -75,6 +75,17 @@ async function waterInit() {
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.autoClear = false;
 
+
+//   let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+// gl.getExtension('OES_standard_derivatives');
+
+// let gl = renderer.domElement.getContext('webgl') ||
+//             renderer.domElement.getContext('experimental-webgl');
+// gl.getExtension('OES_standard_derivatives');
+
+  
+
+
   outlineEffect = new OutlineEffect(renderer, {
     defaultThickness: 0.005,
     defaultColor: [0, 0, 0],
@@ -123,7 +134,7 @@ async function waterInit() {
 
   waterSimulation = new WaterSimulation(renderer);
   water = new Water(light, floor);
-  caustics = new Caustics(water.geometry, light);
+  // caustics = new Caustics(water.geometry, light);
 
   scene.background = new THREE.Color(0xfaf6e6);
   const light2 = new THREE.PointLight(0xffffff, 1, 100);
@@ -241,7 +252,7 @@ async function waterInit() {
     .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
 
-  const loaded = [waterSimulation.loaded, water.loaded, caustics.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
+  const loaded = [waterSimulation.loaded, water.loaded];//, caustics.loaded];
 
   Promise.all(loaded).then(() => {
     canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
@@ -257,24 +268,27 @@ await waterInit();
 
 // Main rendering loop
 function animate() {
+  let gl = renderer.getContext();
+  gl.getExtension('OES_standard_derivatives');
+
   waterSimulation.stepSimulation(renderer, true);
   waterSimulation.updateNormals(renderer);
 
   const waterTexture = waterSimulation.texture.texture;
 
-  const causticsMesh = caustics.update(renderer, waterTexture);
+  // const causticsMesh = caustics.update(renderer, waterTexture);
 
-  const causticsTexture = caustics.texture.texture;
+  // const causticsTexture = caustics.texture.texture;
 
   renderer.setRenderTarget(null);
   renderer.setClearColor(white, 1);
   renderer.clear();
 
-  const waterMesh = water.draw(waterTexture, causticsTexture);
+  const waterMesh = water.draw(waterTexture);//, causticsTexture);
   // waterMesh.position.y = -19.5;
   // waterMesh.position.z = 90;
 
-  scene.add(causticsMesh);
+  // scene.add(causticsMesh);
   scene.add(waterMesh);
   
 

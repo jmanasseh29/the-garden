@@ -3,7 +3,7 @@
 precision highp float;
 precision highp int;
 
-// 
+
 
 #include <utils>
 
