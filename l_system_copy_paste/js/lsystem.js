@@ -177,8 +177,9 @@ export class LSystem {
                 case 'R': {
                     const leaf = new THREE.CircleGeometry(2, 16);
                     const quaternion = new THREE.Quaternion()
-                    quaternion.setFromUnitVectors(z_axis, currentUp)
+                    quaternion.setFromUnitVectors(y_axis, currentUp)
                     leaf.applyQuaternion(quaternion)
+                    leaf.lookAt(currentUp);
                     leaf.translate(endpoint.x, endpoint.y, endpoint.z);
                     leaves.push(leaf);
                     break;

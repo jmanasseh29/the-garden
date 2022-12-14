@@ -242,8 +242,8 @@ function init() {
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.maxPolarAngle = Math.PI / 2;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.01;
+    // controls.enableDamping = true;
+    // controls.dampingFactor = 0.01;
 
     const gui = new GUI()
     const treeFolder = gui.addFolder("Tree Settings");
