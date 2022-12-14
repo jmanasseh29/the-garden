@@ -172,7 +172,9 @@ function getRandomColor() {
 }
 
 var camera, scene, renderer, controls;
-var plant, mesh, currentTreeInScene;
+let stem, leafGroup, plant;
+
+// mesh, currentTreeInScene;
 var material;
 const floorPos = -20;
 var tmp = new THREE.Vector3();
@@ -226,8 +228,13 @@ function init() {
 
     // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
     const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
-    drawDefaultTree(material);
-    scene.add(plant);
+    const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
+    const flowerMaterial = new THREE.MeshBasicMaterial({
+        map: blossomTexture
+    });
+    flowerMaterial.transparent = true;
+    drawDefaultTree(material, flowerMaterial, true);
+    scene.add(stem);
 
     renderer.setClearColor(0xeeeeee);
     window.addEventListener('resize', onWindowResize, false);
@@ -240,50 +247,68 @@ function init() {
     const gui = new GUI()
     const treeFolder = gui.addFolder("Tree Settings");
     treeFolder.add(system, 'theta', 0, 360)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Angle');
     treeFolder.add(system, 'scale', 0, 10)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Length');
     treeFolder.add(system, 'lenDecay', 0.1, 1)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .step(0.01)
         .name('Length Decay');
     treeFolder.add(system, 'thickness', 0, 5)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Thickness');
     treeFolder.add(system, 'thicknessDecay', 0.1, 1)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Thickness Decay');
     treeFolder.add(system, 'iterations', 0, 10)
         .step(1)
-        .onChange(() => { drawDefaultTree(material); })
+        .onChange(() => { drawDefaultTree(material, flowerMaterial, true); })
         .name('Age');
     treeFolder.open();
 
     const randomFolder = gui.addFolder("Stochasticity Settings");
     randomFolder.add(system, 'thetaRandomness', 0, 10)
-        .onFinishChange(() => { drawDefaultTree(material); })
+        .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Angle');
     randomFolder.add(system, 'scaleRandomness', 0, 10)
-        .onFinishChange(() => { drawDefaultTree(material); })
+        .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
         .name('Length');
 }
 
-function drawDefaultTree(material) {
-    scene.remove(plant);
+function drawDefaultTree(material, leafMat, regenTree) {
+    scene.remove(stem);
     // var line_geometry = new THREE.BufferGeometry();
-    let line_geometry = system.generateMesh(0, floorPos, 0);
-    plant = new THREE.Mesh(line_geometry, material);
-    plant.rotateY(90);
-    // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
+    if (regenTree) { system.generate(); }
+    const generatedMeshes = system.generateMesh(0, floorPos, 0);
+    console.log(generatedMeshes);
+    const line_geometry = generatedMeshes[0];
+    const leaves = generatedMeshes[1];
+    stem = new THREE.Mesh(line_geometry, material);
+    // stem.rotateY(90);
+    // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
+    // scene.add(stem);
+    leafGroup = new THREE.Group();
+    leaves.forEach(leafGeometry => {
+        const newLeafMesh = new THREE.Mesh(leafGeometry, leafMat);
+        leafGroup.add(newLeafMesh);
+    });
+
+    stem.rotateY(90);
+    leafGroup.rotateY(90);
+
+    plant = new THREE.Group();
+    plant.add(stem);
+    plant.add(leafGroup);
+
     scene.add(plant);
     // let line_geometry = system.generateMesh(0, -70, 0);
     // for (const branch of line_geometry) {
     //     const branchMesh = new THREE.Mesh(branch, material);
     //     scene.add(branchMesh);
     // }
-    // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
+    // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
 }
 
 function addTree(x, y) {
@@ -300,8 +325,8 @@ function animate() {
     requestAnimationFrame(animate);
     const t0 = Date.now() / 60;
     //scene.rotation.y = t0;
-    // plant.rotation.y += 0.01;
-    // camera.lookAt(plant.position);
+    // stem.rotation.y += 0.01;
+    // camera.lookAt(stem.position);
     renderer.render(scene, camera);
     // controls.update();
 }
