@@ -21,6 +21,7 @@ export class LSystem {
     thicknessDecay = 0.9;
     wiggleRandomness = 0;
     lenDecay = 1;
+    leafSize = 10;
     deltarota = 300;
 
     background = "#000000";
@@ -184,11 +185,12 @@ export class LSystem {
                     break;
                 }
                 case 'R': {
-                    const leaf = new THREE.CircleGeometry(2, 16);
+                    const leaf = new THREE.CircleGeometry(this.leafSize, 16);
                     const quaternion = new THREE.Quaternion()
                     quaternion.setFromUnitVectors(y_axis, currentUp)
                     leaf.applyQuaternion(quaternion)
                     leaf.lookAt(currentUp);
+                    // leaf.scale(currentThickness, currentThickness, currentThickness);
                     leaf.translate(endpoint.x, endpoint.y, endpoint.z);
                     leaves.push(leaf);
                     break;
