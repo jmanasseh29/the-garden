@@ -1,7 +1,9 @@
+#extension GL_OES_standard_derivatives : enable
+
 precision highp float;
 precision highp int;
 
-#extension GL_OES_standard_derivatives : enable
+// 
 
 #include <utils>
 

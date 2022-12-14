@@ -201,6 +201,7 @@ export class Caustics {
         });
 
         this._causticMesh = new THREE.Mesh(this._geometry, material);
+        this._causticMesh.material.extensions.derivatives = true;
       });
     }
 
