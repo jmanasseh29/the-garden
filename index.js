@@ -35,12 +35,15 @@ function loadFile(filename) {
 }
 
 let utils, camera, renderer, light, controls, scene, outlineEffect;
+let trunkMat;
 const plantScene = new THREE.Scene();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
 let water, waterSimulation;
 let stem, leafGroup, plant;
+
+let trunkColor = 0xffffff;
 
 const floorPos = -20;
 
@@ -146,7 +149,8 @@ async function waterInit() {
   const sunMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   const sun = new THREE.Mesh(sunGeo, sunMat);
 
-  sun.position.set(-200, 0, -7000)
+  // sun.position.set(-200, -400, -5000);
+  sun.position.set(-200, 0, -5000);
 
   plantScene.add(sun);
 
@@ -161,14 +165,14 @@ async function waterInit() {
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
-  const material = new THREE.MeshToonMaterial({ color: 0x6e1901 });
+  trunkMat = new THREE.MeshToonMaterial({ color: 0x6e1901 });
   const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture
   });
   flowerMaterial.transparent = true;
   flowerMaterial.side = THREE.DoubleSide;
-  drawDefaultTree(material, flowerMaterial, true);
+  drawDefaultTree(trunkMat, flowerMaterial, true);
   plantScene.add(stem);
 
   plantScene.scale.set(0.05, 0.05, 0.05);
@@ -188,42 +192,52 @@ async function waterInit() {
   const gui = new GUI()
   const treeFolder = gui.addFolder("Tree Settings");
   treeFolder.add(system, 'theta', -50, 50)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Angle');
   treeFolder.add(system, 'scale', 0, 20)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
   treeFolder.add(system, 'lenDecay', 0.1, 1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .step(0.01)
     .name('Length Decay');
   treeFolder.add(system, 'thickness', 0, 10)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Thickness');
   treeFolder.add(system, 'thicknessDecay', 0.1, 1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Thickness Decay');
   treeFolder.add(system, 'iterations', 0, 10)
     .step(1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, true); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, true); })
     .name('Age');
+  treeFolder.add(system, 'pivot', 0, 360)
+    .step(0.01)
+    .onChange(() => { rotateTree(); })
+    .name('pivot');
+  // treeFolder.add(system, 'trunkColor', system.trunkColor)
+  //   .onChange(() => {
+  //     stem.material.color.setHex(dec2hex(system.trunkColor));
+  //     drawDefaultTree(trunkMat, flowerMaterial, true);
+  //   })
+  //   .name('Trunk Color');
   treeFolder.open();
 
   const leafFolder = gui.addFolder("Leaf Settings");
   leafFolder.add(system, 'leafSize', 0, 6)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Size');
   leafFolder.add(system, 'leafDecay')
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Get Smaller');
 
   const randomFolder = gui.addFolder("Stochasticity Settings");
   randomFolder.add(system, 'wiggleRandomness', 0, 1)
     .step(0.01)
-    .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Wiggle');
   randomFolder.add(system, 'scaleRandomness', 0, 10)
-    .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
 
   const loaded = [waterSimulation.loaded, water.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
@@ -268,16 +282,23 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+function rotateTree() {
+  stem.rotation.y = system.pivot * Math.PI / 180;
+  leafGroup.rotation.y = system.pivot * Math.PI / 180;
+  // stem.rotateY(system.pivot);
+  // leafGroup.rotateY(system.pivot);
+}
+
 function drawDefaultTree(material, leafMat, regenTree) {
   plantScene.remove(plant);
   plantScene.remove(stem);
   // var line_geometry = new THREE.BufferGeometry();
   if (regenTree) { system.generate(); }
   const generatedMeshes = system.generateMesh(0, floorPos, 0);
-  console.log(generatedMeshes);
   const line_geometry = generatedMeshes[0];
   const leaves = generatedMeshes[1];
   stem = new THREE.Mesh(line_geometry, material);
+  stem.castShadow = true;
   // stem.rotateY(90);
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
   // plantScene.add(stem);
@@ -287,8 +308,7 @@ function drawDefaultTree(material, leafMat, regenTree) {
     leafGroup.add(newLeafMesh);
   });
 
-  stem.rotateY(90);
-  leafGroup.rotateY(90);
+  rotateTree();
 
   plant = new THREE.Group();
   plant.add(stem);
