@@ -275,6 +275,7 @@ function drawDefaultTree(material) {
     // var line_geometry = new THREE.BufferGeometry();
     let line_geometry = system.generateMesh(0, floorPos, 0);
     plant = new THREE.Mesh(line_geometry, material);
+    plant.rotateY(90);
     // plant = new THREE.Line(line_geometry, material, THREE.LinePieces);
     scene.add(plant);
     // let line_geometry = system.generateMesh(0, -70, 0);
