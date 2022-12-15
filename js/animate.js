@@ -29,5 +29,5 @@ function openAbout() {
 }
 
 function openInstructions() {
-    window.open('https://github.com/jmanasseh29/cs1230-final-project/#suggestions-to-make-a-pretty-looking-scene', '_blank');
+    window.open('https://github.com/jmanasseh29/cs1230-final-project/blob/main/README.md#usage', '_blank');
 }
