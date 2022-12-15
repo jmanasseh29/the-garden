@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>The Garden</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+
+</head>
+
+<body>
+  <div style="text-align:center">
+    <canvas id="canvas" height="" width="" style="position:absolute; top: 0; left: 0;"></canvas>
+  </div>
+  <div class="paper">
+    <div class="br-title">
+      <img class="br-title-img" src="./img/huajian.png">
+      <img class="br-seal-img" src="./img/name_seal.png">
+    </div>
+  </div>
+  <div class="menu">
+    <img class="main-title" src="./img/main_title.png" alt="花見">
+    <div class="menu-buttons">
+      <mark class="menu-item play">
+        <span>
+          paint
+        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#ad0505">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#ff3333">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg>
+      </mark>
+      <mark class="menu-item instructions">
+        <span>
+          instructions
+        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#E8F109">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#F1FB02">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg>
+      </mark>
+      <mark class="menu-item about">
+        <span>
+          about
+        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#1b566e">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" preserveAspectRatio="none" stroke="#37acdb">
+          <path
+            d="m 3.518915,27.827324 c 55.429038,4.081 111.581115,5.822 167.117815,2.867 22.70911,-1.208 45.39827,-0.601 68.126,-0.778 28.38172,-0.223 56.76078,-1.024 85.13721,-1.33 24.17378,-0.261 48.4273,0.571 72.58114,0.571" />
+        </svg>
+      </mark>
+    </div>
+  </div>
+  <script type="module" src="index.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .paper {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 3;
+      opacity: .4;
+      pointer-events: none;
+      background-image: url('./img/paper.webp');
+    }
+
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      /* background-color: rgba(255, 255, 255, 0.816); */
+      background-color: rgb(255, 255, 255);
+      z-index: 2;
+      text-align: center;
+      padding: 30px;
+      display: flexbox;
+      flex-direction: row;
+      transition: all ease-in-out .4s;
+      /* animation-name: fadeSlight;
+      animation-duration: 1s;
+      animation-delay: 5s;
+      animation-fill-mode: forwards; */
+    }
+
+    .main-title {
+      width: 300px;
+      animation: fadeIn 1s;
+    }
+
+    .br-title {
+      opacity: 0;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: opacity ease-in-out .8s;
+    }
+
+    .br-title-img {
+      height: 40vh;
+    }
+
+    .br-seal-img {
+      margin-top: 1vh;
+      margin-left: 5vh;
+      width: 10vh;
+    }
+
+    .menu-item {
+      opacity: 0;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      font-size: 40px;
+      font-family: 'Ubuntu';
+      font-weight: 300;
+      cursor: default;
+      transition: all ease-in-out .2s;
+      animation-name: fadeIn;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      /* transform: scale(1.03, 1.03); */
+      /* color: rgb(255, 143, 112); */
+    }
+
+    .play {
+      animation-delay: 1.5s;
+    }
+
+    .instructions {
+      animation-delay: 2s;
+    }
+
+    .about {
+      animation-delay: 2.5s;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        margin-left: 20px;
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(0, 0px, 0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeSlight {
+      0% {
+        background-color: white;
+      }
+
+      100% {
+        background-color: rgba(255, 255, 255, 0.816);
+      }
+    }
+
+    mark {
+      position: relative;
+      background: none;
+    }
+
+    svg {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      right: -10%;
+      bottom: -10%;
+      z-index: -1;
+      margin: auto;
+      padding: 0;
+      width: 20px;
+      height: 100%;
+      fill: none;
+      stroke-width: 54px;
+      /* height from "svg" x 1.125 */
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      transition: stroke-dashoffset .4s ease-in-out;
+      will-change: stroke-dashoffset;
+      pointer-events: none;
+    }
+
+    svg:first-of-type {
+      width: 10%;
+      height: 104%;
+      transform: skewX(-17deg);
+    }
+
+    svg:last-of-type {
+      width: 10%;
+      transform: skewX(-12deg);
+    }
+
+    mark:hover>svg {
+      stroke-dashoffset: 0;
+    }
+  </style>
+  <script src="./js/animate.js"></script>
+</body>
+
+</html>
