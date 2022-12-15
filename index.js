@@ -32,6 +32,16 @@ let ruleMap13 = {
   'F': "FF"
 }
 
+let ruleMapComplex = {
+  'F': 'Y[++++++MF][-----NF][<<<<<OF][>>>>>PF]',
+  'M': 'Z-M',
+  'N': 'Z+N',
+  'O': 'Z>O',
+  'P': 'Z<P',
+  'Y': 'Z-ZY+',
+  'Z': 'ZFF'
+}
+
 let system = new LSystem(ruleMap14, "R");
 
 function loadFile(filename) {
