@@ -5,8 +5,8 @@ import { Coin } from './l_system_copy_paste/js/coin.js';
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
-import {EffectComposer} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/EffectComposer.js';
-import {RenderPass} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/RenderPass.js';
+import { EffectComposer } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/RenderPass.js';
 import { OBJLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/OBJLoader.js';
 import { FBXLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/FBXLoader.js';
 
@@ -87,9 +87,9 @@ async function waterInit() {
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.autoClear = false;
 
-  composer = new EffectComposer( renderer );
-  const renderPass = new RenderPass( scene, camera );
-  composer.addPass( renderPass );
+  composer = new EffectComposer(renderer);
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
 
 
   outlineEffect = new OutlineEffect(renderer, {
@@ -166,10 +166,10 @@ async function waterInit() {
   plantScene.add(ground);
 
   const sunGeo = new THREE.SphereGeometry(100, 32, 16);
-  const sunMat = new THREE.MeshBasicMaterial({ color: 0x000000 , side: THREE.BackSide});
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
   const sunObj = new THREE.Group();
-  const noiseText2 = new THREE.TextureLoader().load( 'img/noise2.jpeg' );
-  const sunMat2 = new THREE.MeshBasicMaterial( { color: 0xff0000, map: noiseText2 , side: THREE.FrontSide} )
+  const noiseText2 = new THREE.TextureLoader().load('img/noise2.jpeg');
+  const sunMat2 = new THREE.MeshBasicMaterial({ color: 0xff0000, map: noiseText2, side: THREE.FrontSide })
   const sun = new THREE.Mesh(sunGeo, sunMat2);
   const sunOutline = new THREE.Mesh(sunGeo, sunMat);
   sunOutline.scale.set(1.03, 1.03, 1.03);
@@ -190,22 +190,24 @@ async function waterInit() {
       object.traverse(function (child) {
 
         if (child.isMesh) {
-          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c});
-        //   let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
-        //   rockOutlineMat.onBeforeCompile = (shader) => {
-        //     const token = '#include <begin_vertex>'
-        //     const customTransform = `
-        //         vec3 transformed = position + objectNormal*0.4;
-        //     `
-        //     shader.vertexShader = 
-        //         shader.vertexShader.replace(token,customTransform)
-        // }
-        //   let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
-        //   // rockOutline.scale.set(1.03, 1.03, 1.03);
-        //   rockGroup.add(rockOutline);
-        //   // rockGroup.add(child);
+
+          child.material = new THREE.MeshToonMaterial({ color: 0x71756b });
+          // child.material = new THREE.MeshToonMaterial({ color: 0x969c8c });
+          //   let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
+          //   rockOutlineMat.onBeforeCompile = (shader) => {
+          //     const token = '#include <begin_vertex>'
+          //     const customTransform = `
+          //         vec3 transformed = position + objectNormal*0.4;
+          //     `
+          //     shader.vertexShader = 
+          //         shader.vertexShader.replace(token,customTransform)
+          // }
+          //   let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
+          //   // rockOutline.scale.set(1.03, 1.03, 1.03);
+          //   rockGroup.add(rockOutline);
+          //   // rockGroup.add(child);
         }
-        
+
 
       });
       // object.scale.set(0.01, 0.01, 0.01);
@@ -377,7 +379,7 @@ function animate() {
 
   // scene.add(causticsMesh);
   scene.add(waterMesh);
-  
+
 
   composer.render(scene, camera);
   // renderer.render(scene);
@@ -409,15 +411,15 @@ function drawDefaultTree(material, leafMat, regenTree) {
   // stem.rotateY(90);
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
   // plantScene.add(stem);
-  const outMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide});
+  const outMat = new THREE.MeshLambertMaterial({ color: 0x000000, side: THREE.BackSide });
   outMat.onBeforeCompile = (shader) => {
     const token = '#include <begin_vertex>'
     const customTransform = `
         vec3 transformed = position + objectNormal*0.4;
     `
-    shader.vertexShader = 
-        shader.vertexShader.replace(token,customTransform)
-}
+    shader.vertexShader =
+      shader.vertexShader.replace(token, customTransform)
+  }
   stemOutline = new THREE.Mesh(line_geometry, outMat);
   // stemOutline.scale.set(1.03, 1.03, 1.03);
   leafGroup = new THREE.Group();
