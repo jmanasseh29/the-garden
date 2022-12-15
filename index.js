@@ -1,9 +1,9 @@
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
-import { Water, WaterSimulation, Caustics } from './l_system_copy_paste/js/water.js';
-import { Coin } from './l_system_copy_paste/js/coin.js';
-import { LSystem } from './l_system_copy_paste/js/lsystem.js';
-import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
+import { Water, WaterSimulation, Caustics } from './js/water.js';
+import { Coin } from './js/coin.js';
+import { LSystem } from './js/lsystem.js';
+import { GUI } from './js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
 import { EffectComposer } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/RenderPass.js';
