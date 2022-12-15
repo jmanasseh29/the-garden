@@ -1,5 +1,6 @@
 const paintButton = document.querySelector(".play");
 const aboutButton = document.querySelector(".about");
+const instructionButton = document.querySelector(".instructions");
 const menuCanvas = document.querySelector(".menu");
 const sideTitle = document.querySelector(".br-title");
 
@@ -14,6 +15,8 @@ paintButton.addEventListener('mouseleave', (event) => {
 paintButton.addEventListener('click', () => { startPainting(); });
 
 aboutButton.addEventListener('click', () => { openAbout(); });
+
+instructionButton.addEventListener('click', () => { openInstructions(); });
 
 function startPainting() {
     menuCanvas.style.pointerEvents = 'none';
