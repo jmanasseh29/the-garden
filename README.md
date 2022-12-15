@@ -21,6 +21,18 @@ The water comes with ambient droplets periodically falling into the pond, but th
 ## Stylization
 The garden uses multiple render passes in order to achieve its painting-like visuals. Each mesh in the scene (including the tree and the water) is first rendered with cel-shading to give it a hand-shaded look. Then, certain meshes are duplicated and rendered completely black in a separate pass in order to render the outlines of objects. Then, noise is added to certain objects to make the paint look splotchy in appropriate areas. This effect is especially noticeable when the user looks at the blood moon in the background. Finally, a wrinkled paper texture is added on top of the entire scene along with some overall noise in order to make the scene look like it was painted on a surface. 
 
+## Usage
+- Press paint to start interacting with the scene
+- Click and drag with one finger to rotate around the tree
+- Scroll with two fingers to zoom (you have to zoom out to see the moon)
+- Right click + drag or click and drag with two fingers to pan around the scene
+- Play with the parameters to mess with the growth of your tree
+  - Tree Settings messes specifically with how the tree is generated
+  - Leaf Settings messes with the flowers
+  - Stochasticity Settings introduces more randomness
+- Hover your mouse over the pond to create ripples
+- Press spacebar to throw a coin into the pond and make a wish
+
 ## Suggestions to make a pretty-looking scene
 1. Increase the length to ~13
 2. Increase thickness to ~7
