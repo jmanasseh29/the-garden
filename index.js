@@ -214,7 +214,7 @@ async function waterInit() {
       // object.position.y = 0.01;
       // scene.add(object);
       object.scale.set(.2, .2, .2);
-      object.position.set(0, -19.5, 100);
+      object.position.set(0, -19, 100);
       // object.position.y = 0.01;
       plantScene.add(object);
     },
