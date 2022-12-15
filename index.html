@@ -13,7 +13,11 @@
   <div style="text-align:center">
     <canvas id="canvas" height="" width="" style="position:absolute; top: 0; left: 0;"></canvas>
   </div>
-  <div class="paper"></div>
+  <div class="paper">
+    <div class="br-title">
+      <img class="br-title-img" src="./img/huajian.png">
+    </div>
+  </div>
   <script type="module" src="index.js"></script>
   <style>
     * {
@@ -30,6 +34,16 @@
       opacity: .4;
       pointer-events: none;
       background-image: url('./img/paper.webp');
+    }
+
+    .br-title {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .br-title-img {
+      height: 40vh;
     }
   </style>
 </body>

@@ -6,6 +6,8 @@ import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
 import {EffectComposer} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/EffectComposer.js';
 import {RenderPass} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/RenderPass.js';
+import { OBJLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/OBJLoader.js';
+import { FBXLoader } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/loaders/FBXLoader.js';
 
 const canvas = document.getElementById('canvas');
 
@@ -24,6 +26,11 @@ let ruleMap14 = {
   // 'F': 'F^F'
 }
 
+let ruleMap13 = {
+  'R': "F[-^R][+R]FR",
+  'F': "FF"
+}
+
 let system = new LSystem(ruleMap14, "R");
 
 function loadFile(filename) {
@@ -37,12 +44,16 @@ function loadFile(filename) {
 }
 
 let utils, camera, renderer, light, controls, scene, composer, outlineEffect;
+let trunkMat;
 const plantScene = new THREE.Scene();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
 let water, waterSimulation;
 let stem, leafGroup, plant;
+let numGrass = 30;
+
+let trunkColor = 0xffffff;
 
 const floorPos = -20;
 
@@ -85,7 +96,7 @@ async function waterInit() {
   outlineEffect = new OutlineEffect(renderer, {
     defaultThickness: 0.005,
     defaultColor: [0, 0, 0],
-    defaultAlpha: 0.5,
+    defaultAlpha: 0.2,
     defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
   });
 
@@ -142,6 +153,8 @@ async function waterInit() {
   light2.position.y = 100;
   light2.position.z = 100;
 
+  //Geometry setup
+
   // setRules0();
   let floorGeo = new THREE.PlaneBufferGeometry(2000, 2000, 8, 8);
   // let floorMat = new THREE.MeshBasicMaterial({ color: 0x02e80e, side: THREE.DoubleSide });
@@ -166,6 +179,53 @@ async function waterInit() {
 
   plantScene.add(sunObj);
 
+  const fbxLoader = new FBXLoader();
+
+  fbxLoader.load(
+    // resource URL
+    'models/rockring.fbx',
+    function (object) {
+      object.traverse(function (child) {
+
+        if (child.isMesh) {
+          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c })
+        }
+
+      });
+      // object.scale.set(0.01, 0.01, 0.01);
+      // object.position.y = 0.01;
+      // scene.add(object);
+      object.scale.set(.2, .2, .2);
+      object.position.set(0, -19.5, 100);
+      // object.position.y = 0.01;
+      plantScene.add(object);
+    },
+    function (xhr) {
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    function (error) {
+      console.log('An error happened when loading rock: ' + error);
+    }
+  );
+
+  const grassTexture = textureloader.load('./img/grass/grass1.png');
+
+  for (let i = 0; i < numGrass; i++) {
+    // const grassGeo = new THREE.SphereGeometry(10, 32, 16);
+    // const grassMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const grassMat = new THREE.SpriteMaterial({ map: grassTexture });
+    // const grassMesh = new THREE.Mesh(grassGeo, grassMat);
+    const grassMesh = new THREE.Sprite(grassMat);
+
+    const xpos = (Math.random() - 0.5) * 2000;
+    const zpos = (Math.random() - 0.5) * 2000;
+    // sun.position.set(-200, -400, -5000);
+    const grassSize = (Math.random() + 1) * 15;
+    grassMesh.scale.set(grassSize, grassSize * 0.334170854);
+    grassMesh.position.set(xpos, floorPos + 10, zpos);
+    plantScene.add(grassMesh);
+  }
+
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
   // // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -177,14 +237,14 @@ async function waterInit() {
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
-  const material = new THREE.MeshToonMaterial({ color: 0x6e1901});
-  const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
+  trunkMat = new THREE.MeshToonMaterial({ color: 0x6e1901 });
+  const blossomTexture = textureloader.load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture
   });
   flowerMaterial.transparent = true;
   flowerMaterial.side = THREE.DoubleSide;
-  drawDefaultTree(material, flowerMaterial, true);
+  drawDefaultTree(trunkMat, flowerMaterial, true);
   plantScene.add(stem);
 
   plantScene.scale.set(0.05, 0.05, 0.05);
@@ -204,42 +264,52 @@ async function waterInit() {
   const gui = new GUI()
   const treeFolder = gui.addFolder("Tree Settings");
   treeFolder.add(system, 'theta', -50, 50)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Angle');
   treeFolder.add(system, 'scale', 0, 20)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
   treeFolder.add(system, 'lenDecay', 0.1, 1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .step(0.01)
     .name('Length Decay');
   treeFolder.add(system, 'thickness', 0, 10)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Thickness');
   treeFolder.add(system, 'thicknessDecay', 0.1, 1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Thickness Decay');
   treeFolder.add(system, 'iterations', 0, 10)
     .step(1)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, true); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, true); })
     .name('Age');
+  treeFolder.add(system, 'pivot', 0, 360)
+    .step(0.01)
+    .onChange(() => { rotateTree(); })
+    .name('Pivot');
+  // treeFolder.add(system, 'trunkColor', system.trunkColor)
+  //   .onChange(() => {
+  //     stem.material.color.setHex(dec2hex(system.trunkColor));
+  //     drawDefaultTree(trunkMat, flowerMaterial, true);
+  //   })
+  //   .name('Trunk Color');
   treeFolder.open();
 
   const leafFolder = gui.addFolder("Leaf Settings");
   leafFolder.add(system, 'leafSize', 0, 6)
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Size');
   leafFolder.add(system, 'leafDecay')
-    .onChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Get Smaller');
 
   const randomFolder = gui.addFolder("Stochasticity Settings");
   randomFolder.add(system, 'wiggleRandomness', 0, 1)
     .step(0.01)
-    .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Wiggle');
   randomFolder.add(system, 'scaleRandomness', 0, 10)
-    .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
+    .onFinishChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Length');
 
 
@@ -285,18 +355,25 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+function rotateTree() {
+  stem.rotation.y = system.pivot * Math.PI / 180;
+  leafGroup.rotation.y = system.pivot * Math.PI / 180;
+  // stem.rotateY(system.pivot);
+  // leafGroup.rotateY(system.pivot);
+}
+
 function drawDefaultTree(material, leafMat, regenTree) {
   plantScene.remove(plant);
   plantScene.remove(stem);
   // var line_geometry = new THREE.BufferGeometry();
   if (regenTree) { system.generate(); }
   const generatedMeshes = system.generateMesh(0, floorPos, 0);
-  console.log(generatedMeshes);
   const line_geometry = generatedMeshes[0];
   const leaves = generatedMeshes[1];
   const stemGroup = new THREE.Group();
   material.side = THREE.FrontSide;
   stem = new THREE.Mesh(line_geometry, material);
+  stem.castShadow = true;
   // stem.rotateY(90);
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
   // plantScene.add(stem);
@@ -317,12 +394,9 @@ function drawDefaultTree(material, leafMat, regenTree) {
     leafGroup.add(newLeafMesh);
   });
 
-  stem.rotateY(90);
-  leafGroup.rotateY(90);
-  stemOutline.rotateY(90);
-
   stemGroup.add(stemOutline);
   stemGroup.add(stem);
+  rotateTree();
 
   plant = new THREE.Group();
   plant.add(stemGroup);

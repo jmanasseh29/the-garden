@@ -23,8 +23,10 @@ export class LSystem {
     lenDecay = 1;
     leafSize = 1;
     leafDecay = false;
+    pivot = 90;
     deltarota = 300;
 
+    trunkColor = 0xffffff;
     background = "#000000";
     general = "#111faa";
     random = true;
