@@ -318,7 +318,7 @@ async function waterInit() {
   treeFolder.add(system, 'thicknessDecay', 0.1, 1)
     .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, false); })
     .name('Thickness Decay');
-  treeFolder.add(system, 'iterations', 0, 10)
+  treeFolder.add(system, 'iterations', 0, 5)
     .step(1)
     .onChange(() => { drawDefaultTree(trunkMat, flowerMaterial, true); })
     .name('Age');
