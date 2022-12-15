@@ -235,8 +235,14 @@ async function waterInit() {
     // const grassMesh = new THREE.Mesh(grassGeo, grassMat);
     const grassMesh = new THREE.Sprite(grassMat);
 
-    const xpos = (Math.random() - 0.5) * 2000;
-    const zpos = (Math.random() - 0.5) * 2000;
+    let xpos = (Math.random() - 0.5) * 2000;
+    let zpos = (Math.random() - 0.5) * 2000;
+
+    while (Math.abs(xpos) < 90 && zpos < 200 && zpos > -20) {
+      xpos = (Math.random() - 0.5) * 2000;
+      zpos = (Math.random() - 0.5) * 2000;
+    }
+
     // sun.position.set(-200, -400, -5000);
     const grassSize = (Math.random() + 1) * 15;
     grassMesh.scale.set(grassSize, grassSize * 0.334170854);
