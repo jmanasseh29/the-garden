@@ -8,7 +8,9 @@ The aim of our project was to make a simulation of natural elements and make it 
 - Stylization
 
 # Code
-We used THREE.js with HTML, CSS, and JS to create our website.
+We used THREE.js with HTML, CSS, and JS to create our website. 
+
+To run our code, you can open it with VSCode live server or visit it online (if you're reading this before December 15th, the website should be up within the next couple of days).
 
 ## Tree and scene overview
 The tree was generated using Stochastic, 3D Lindenmayer Systems and is adaptable for any given ruleset. The ruleset we used was based off of a cherry blossom tree. The user can freely customize and finetune the tree to their liking by adjusting the `Tree Settings` and `Leaf Settings` (e.g. lengthening/heightening the tree, thickening the tree, adjusting how much the tree tapers, etc.). They can create increasingly complex branching structures by increasing the "age" of the tree (the number of L-System iterations) and can introduce randomness by adjusting the `Stochasticity Settings`. We looked at [this example](https://codepen.io/mikkamikka/pen/DrdzVK) of L-Systems in ThreeJS for inspiration, but we realized that code was a 3D adaption of 2D L-Systems and was not extendable to 3D, so we had to look elsewhere, both for implementation guidance and ideas for different branching structures. The vocabulary for our L-Systems is universal (as it is taken from the Turtle Graphics Library) but we learned it from [this paper](https://www.bioquest.org/products/files/13157_Real-time%203D%20Plant%20Structure%20Modeling%20by%20L-System.pdf). The viewer can look at the tree from different angles by dragging around the camera and zooming in and out with the scroll wheel (or with two fingers on the trackpad). 
