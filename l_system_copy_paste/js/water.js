@@ -101,7 +101,7 @@ export class WaterSimulation {
         this.addDrop(
             this.renderer,
             Math.random() * WATER_WIDTH - WATER_WIDTH / 2.0, Math.random() * WATER_WIDTH - WATER_WIDTH / 2.0,
-            0.03, 0.02
+            0.03, 0.04
         );
     }
 
@@ -154,7 +154,6 @@ export class Water {
                         floor: { value: floor },
                         water: { value: null },
                         causticTex: { value: null },
-                        underwater: { value: false }
                     },
                     vertexShader: vertexShader,
                     fragmentShader: fragmentShader,
@@ -165,18 +164,57 @@ export class Water {
             });
     }
 
-    draw(waterTexture) {
+    draw(waterTexture, causticsTexture) {
         this.material.uniforms['water'].value = waterTexture;
-
-        // this.material.side = THREE.FrontSide;
-        // this.material.uniforms['underwater'].value = true;
-        // renderer.render(this.mesh, camera);
-        // return this.mesh;
+        this.material.uniforms['causticTex'].value = causticsTexture;
 
         this.material.side = THREE.BackSide;
-        this.material.uniforms['underwater'].value = false;
         return this.mesh;
         // renderer.render(this.mesh, camera);
     }
 
 }
+
+export class Caustics {
+
+    constructor(lightFrontGeometry, light) {
+      this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
+
+      this._geometry = lightFrontGeometry;
+
+      this.texture = new THREE.WebGLRenderTarget(1024, 1024, {type: THREE.UNSIGNED_BYTE});
+
+      const shadersPromises = [
+        loadFile('shaders/caustics/vertex.glsl'),
+        loadFile('shaders/caustics/fragment.glsl')
+      ];
+
+      this.loaded = Promise.all(shadersPromises)
+          .then(([vertexShader, fragmentShader]) => {
+        const material = new THREE.RawShaderMaterial({
+          uniforms: {
+              light: { value: light },
+              water: { value: null },
+          },
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+        });
+
+        this._causticMesh = new THREE.Mesh(this._geometry, material);
+        this._causticMesh.material.extensions.derivatives = true;
+      });
+    }
+
+    update(waterTexture) {
+      this._causticMesh.material.uniforms['water'].value = waterTexture;
+
+    //   renderer.setRenderTarget(this.texture);
+    //   renderer.setClearColor(black, 0);
+    //   renderer.clear();
+
+      return this._causticMesh;
+      // TODO Camera is useless here, what should be done?
+      // renderer.render(this._causticMesh, this._camera);
+    }
+
+  }

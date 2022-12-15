@@ -3,9 +3,6 @@ precision highp int;
 
 #include <utils>
 
-uniform float underwater;
-// uniform samplerCube sky;
-
 varying vec3 eye;
 varying vec3 pos;
 
@@ -59,27 +56,15 @@ void main() {
   vec3 normal = vec3(info.b, sqrt(1.0 - dot(info.ba, info.ba)), info.a);
   vec3 incomingRay = normalize(pos - eye);
 
-  if (underwater == 1.) {
-    normal = -normal;
-    vec3 reflectedRay = reflect(incomingRay, normal);
-    vec3 refractedRay = refract(incomingRay, normal, IOR_WATER / IOR_AIR);
-    float fresnel = mix(0.5, 1.0, pow(1.0 - dot(normal, -incomingRay), 3.0));
+  vec3 reflectedRay = reflect(incomingRay, normal);
+  vec3 refractedRay = refract(incomingRay, normal, IOR_AIR / IOR_WATER);
+  float fresnel = mix(0.01, 5.0, pow(1.0 - dot(normal, -incomingRay), 5.0)); //first is blackness, second one can kinda sunset
 
-    vec3 reflectedColor = getSurfaceRayColor(pos, reflectedRay, underwaterColor);
-    vec3 refractedColor = getSurfaceRayColor(pos, refractedRay, vec3(1.0)) * vec3(0.8, 1.0, 1.1);
+  vec3 reflectedColor = getSurfaceRayColor(pos, reflectedRay, abovewaterColor);
+  vec3 refractedColor = getSurfaceRayColor(pos, refractedRay, abovewaterColor);
 
-    gl_FragColor = vec4(mix(reflectedColor, refractedColor, (1.0 - fresnel) * length(refractedRay)), 1.0);
-  } else {
-    vec3 reflectedRay = reflect(incomingRay, normal);
-    vec3 refractedRay = refract(incomingRay, normal, IOR_AIR / IOR_WATER);
-    float fresnel = mix(0.6, 2.0, pow(1.0 - dot(normal, -incomingRay), 5.0)); //first is blackness, second one can kinda sunset
+  vec4 colorIn = vec4(mix(refractedColor, reflectedColor, fresnel), 1.0);
 
-    vec3 reflectedColor = getSurfaceRayColor(pos, reflectedRay, abovewaterColor);
-    vec3 refractedColor = getSurfaceRayColor(pos, refractedRay, abovewaterColor);
-
-    vec4 colorIn = vec4(mix(refractedColor, reflectedColor, fresnel), 1.0);
-
-    gl_FragColor = cellShade(dot(normal, -incomingRay), colorIn);
-    // gl_FragColor = colorIn;
-  }
+  gl_FragColor = cellShade(dot(normal, -incomingRay), colorIn);
+  // gl_FragColor = colorIn;
 }
