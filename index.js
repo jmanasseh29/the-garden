@@ -190,20 +190,20 @@ async function waterInit() {
       object.traverse(function (child) {
 
         if (child.isMesh) {
-          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c, side: THREE.FrontSide});
-          let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
-          rockOutlineMat.onBeforeCompile = (shader) => {
-            const token = '#include <begin_vertex>'
-            const customTransform = `
-                vec3 transformed = position + objectNormal*0.4;
-            `
-            shader.vertexShader = 
-                shader.vertexShader.replace(token,customTransform)
-        }
-          let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
-          // rockOutline.scale.set(1.03, 1.03, 1.03);
-          rockGroup.add(rockOutline);
-          // rockGroup.add(child);
+          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c});
+        //   let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
+        //   rockOutlineMat.onBeforeCompile = (shader) => {
+        //     const token = '#include <begin_vertex>'
+        //     const customTransform = `
+        //         vec3 transformed = position + objectNormal*0.4;
+        //     `
+        //     shader.vertexShader = 
+        //         shader.vertexShader.replace(token,customTransform)
+        // }
+        //   let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
+        //   // rockOutline.scale.set(1.03, 1.03, 1.03);
+        //   rockGroup.add(rockOutline);
+        //   // rockGroup.add(child);
         }
         
 
