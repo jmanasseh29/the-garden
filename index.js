@@ -50,7 +50,7 @@ let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
 let water, waterSimulation;
-let stem, leafGroup, plant;
+let stem, leafGroup, plant, stemOutline;
 let numGrass = 30;
 
 let trunkColor = 0xffffff;
@@ -181,6 +181,8 @@ async function waterInit() {
 
   const fbxLoader = new FBXLoader();
 
+  const rockGroup = new THREE.Group();
+
   fbxLoader.load(
     // resource URL
     'models/rockring.fbx',
@@ -188,8 +190,22 @@ async function waterInit() {
       object.traverse(function (child) {
 
         if (child.isMesh) {
-          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c })
+          child.material = new THREE.MeshToonMaterial({ color: 0x969c8c, side: THREE.FrontSide});
+          let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
+          rockOutlineMat.onBeforeCompile = (shader) => {
+            const token = '#include <begin_vertex>'
+            const customTransform = `
+                vec3 transformed = position + objectNormal*0.4;
+            `
+            shader.vertexShader = 
+                shader.vertexShader.replace(token,customTransform)
         }
+          let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
+          // rockOutline.scale.set(1.03, 1.03, 1.03);
+          rockGroup.add(rockOutline);
+          // rockGroup.add(child);
+        }
+        
 
       });
       // object.scale.set(0.01, 0.01, 0.01);
@@ -358,6 +374,7 @@ function animate() {
 function rotateTree() {
   stem.rotation.y = system.pivot * Math.PI / 180;
   leafGroup.rotation.y = system.pivot * Math.PI / 180;
+  stemOutline.rotation.y = system.pivot * Math.PI / 180;
   // stem.rotateY(system.pivot);
   // leafGroup.rotateY(system.pivot);
 }
@@ -386,7 +403,7 @@ function drawDefaultTree(material, leafMat, regenTree) {
     shader.vertexShader = 
         shader.vertexShader.replace(token,customTransform)
 }
-  const stemOutline = new THREE.Mesh(line_geometry, outMat);
+  stemOutline = new THREE.Mesh(line_geometry, outMat);
   // stemOutline.scale.set(1.03, 1.03, 1.03);
   leafGroup = new THREE.Group();
   leaves.forEach(leafGeometry => {
