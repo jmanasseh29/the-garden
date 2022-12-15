@@ -42,6 +42,11 @@ let ruleMapComplex = {
   'Z': 'ZFF'
 }
 
+let ruleMap1 = {
+  'X': '^FR>>R>>>>>R',
+  'R': '[^^F>>>>>>X]'
+}
+
 let system = new LSystem(ruleMap14, "R");
 
 function loadFile(filename) {
