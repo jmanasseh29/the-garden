@@ -19,6 +19,8 @@ const POOL_HEIGHT = 1.0;
 const black = new THREE.Color('black');
 const white = new THREE.Color('white');
 
+
+
 let ruleMap14 = {
   'R': "FFF[F&>-[F^R^F[+FR+&FC]R[-F-<FC]]<FR<F]",
   // 'R': "FFF[F&&>>--[F^^R^^F[++FR++&&FC]R[--F--<<FC]]<<FR<<F]",
@@ -51,6 +53,7 @@ const textureloader = new THREE.TextureLoader();
 let water, waterSimulation, caustics;
 let coin;
 let stem, leafGroup, plant;
+let sound;
 
 let trunkColor = 0xffffff;
 
@@ -83,6 +86,19 @@ async function waterInit() {
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.autoClear = false;
+
+  const listener = new THREE.AudioListener();
+  camera.add( listener );
+
+  sound = new THREE.Audio( listener );
+
+  // load a sound and set it as the Audio object's buffer
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load( 'droplet_sound.mp3', function( buffer ) {
+	  sound.setBuffer( buffer );
+	  sound.setLoop( false );
+	  sound.setVolume( 0.5 );
+  });
 
 
 //   let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -202,27 +218,8 @@ async function waterInit() {
     }
   );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   coin = new Coin();
-
   scene.add(coin.mesh);
-
-
-
 
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
@@ -332,6 +329,7 @@ function animate() {
   const coinPos = coin.update();
   if (coinPos) {
     waterSimulation.addDrop(renderer, coinPos.x, coinPos.z, 0.05, 0.5);
+    sound.play();
   }
 
 
