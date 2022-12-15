@@ -1,6 +1,7 @@
 import { OrbitControls } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/controls/OrbitControls.js';
 import * as THREE from '//cdn.skypack.dev/three@0.130.1/build/three.module.js';
 import { Water, WaterSimulation, Caustics } from './l_system_copy_paste/js/water.js';
+import { Coin } from './l_system_copy_paste/js/coin.js';
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
@@ -48,6 +49,7 @@ let raycaster, mousePos;
 let targetgeometry, targetmesh;
 const textureloader = new THREE.TextureLoader();
 let water, waterSimulation, caustics;
+let coin;
 let stem, leafGroup, plant;
 
 let trunkColor = 0xffffff;
@@ -200,6 +202,28 @@ async function waterInit() {
     }
   );
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  coin = new Coin();
+
+  scene.add(coin.mesh);
+
+
+
+
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
   // // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -302,8 +326,14 @@ await waterInit();
 
 // Main rendering loop
 function animate() {
-  let gl = renderer.getContext();
-  gl.getExtension('OES_standard_derivatives');
+  // let gl = renderer.getContext();
+  // gl.getExtension('OES_standard_derivatives');
+
+  const coinPos = coin.update();
+  if (coinPos) {
+    waterSimulation.addDrop(renderer, coinPos.x, coinPos.z, 0.05, 0.5);
+  }
+
 
   waterSimulation.stepSimulation(renderer, true);
   waterSimulation.updateNormals(renderer);
@@ -373,6 +403,13 @@ function drawDefaultTree(material, leafMat, regenTree) {
   // }
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
 }
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === "Space") {
+    if (coin.canToss())
+      coin.toss();
+  }
+});
 
 function onMouseMove(event) {
   const rect = canvas.getBoundingClientRect();
