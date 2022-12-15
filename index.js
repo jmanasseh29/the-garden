@@ -4,6 +4,8 @@ import { Water, WaterSimulation } from './l_system_copy_paste/js/water.js';
 import { LSystem } from './l_system_copy_paste/js/lsystem.js';
 import { GUI } from './l_system_copy_paste/js/dat.gui.module.js';
 import { OutlineEffect } from '//cdn.skypack.dev/three@0.130.1/examples/jsm/effects/OutlineEffect.js';
+import {EffectComposer} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/EffectComposer.js';
+import {RenderPass} from '//cdn.skypack.dev/three@0.130.1/examples/jsm/postprocessing/RenderPass.js';
 
 const canvas = document.getElementById('canvas');
 
@@ -34,7 +36,7 @@ function loadFile(filename) {
   });
 }
 
-let utils, camera, renderer, light, controls, scene, outlineEffect;
+let utils, camera, renderer, light, controls, scene, composer, outlineEffect;
 const plantScene = new THREE.Scene();
 let raycaster, mousePos;
 let targetgeometry, targetmesh;
@@ -71,6 +73,14 @@ async function waterInit() {
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.autoClear = false;
+
+  composer = new EffectComposer( renderer );
+  const renderPass = new RenderPass( scene, camera );
+  composer.addPass( renderPass );
+
+
+
+
 
   outlineEffect = new OutlineEffect(renderer, {
     defaultThickness: 0.005,
@@ -143,12 +153,18 @@ async function waterInit() {
   plantScene.add(ground);
 
   const sunGeo = new THREE.SphereGeometry(100, 32, 16);
-  const sunMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  const sun = new THREE.Mesh(sunGeo, sunMat);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0x000000 , side: THREE.BackSide});
+  const sunObj = new THREE.Group();
+  const noiseText2 = new THREE.TextureLoader().load( 'img/noise2.jpeg' );
+  const sunMat2 = new THREE.MeshBasicMaterial( { color: 0xff0000, map: noiseText2 , side: THREE.FrontSide} )
+  const sun = new THREE.Mesh(sunGeo, sunMat2);
+  const sunOutline = new THREE.Mesh(sunGeo, sunMat);
+  sunOutline.scale.set(1.03, 1.03, 1.03);
+  sunObj.add(sunOutline);
+  sunObj.add(sun);
+  sunObj.position.set(-100, 0, -3000)
 
-  sun.position.set(-200, 0, -7000)
-
-  plantScene.add(sun);
+  plantScene.add(sunObj);
 
   // const dummyPondGeo = new THREE.CylinderGeometry(80, 1, .05, 40);
 
@@ -161,7 +177,7 @@ async function waterInit() {
 
   // var material = new THREE.LineBasicMaterial({ color: 0x332120, linewidth: 3.0 });
   // const material = new THREE.MeshPhongMaterial({ color: 0x6e1901 })
-  const material = new THREE.MeshToonMaterial({ color: 0x6e1901 });
+  const material = new THREE.MeshToonMaterial({ color: 0x6e1901});
   const blossomTexture = new THREE.TextureLoader().load('./img/blossom.png');
   const flowerMaterial = new THREE.MeshBasicMaterial({
     map: blossomTexture
@@ -226,6 +242,7 @@ async function waterInit() {
     .onFinishChange(() => { drawDefaultTree(material, flowerMaterial, false); })
     .name('Length');
 
+
   const loaded = [waterSimulation.loaded, water.loaded];// caustics.loaded, water.loaded];//, , pool.loaded, debug.loaded];
 
   Promise.all(loaded).then(() => {
@@ -261,7 +278,7 @@ function animate() {
 
   scene.add(waterMesh);
 
-  outlineEffect.render(scene, camera);
+  composer.render(scene, camera);
   // renderer.render(scene);
 
   controls.update();
@@ -277,10 +294,23 @@ function drawDefaultTree(material, leafMat, regenTree) {
   console.log(generatedMeshes);
   const line_geometry = generatedMeshes[0];
   const leaves = generatedMeshes[1];
+  const stemGroup = new THREE.Group();
+  material.side = THREE.FrontSide;
   stem = new THREE.Mesh(line_geometry, material);
   // stem.rotateY(90);
   // stem = new THREE.Line(line_geometry, material, THREE.LinePieces);
   // plantScene.add(stem);
+  const outMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide});
+  outMat.onBeforeCompile = (shader) => {
+    const token = '#include <begin_vertex>'
+    const customTransform = `
+        vec3 transformed = position + objectNormal*0.4;
+    `
+    shader.vertexShader = 
+        shader.vertexShader.replace(token,customTransform)
+}
+  const stemOutline = new THREE.Mesh(line_geometry, outMat);
+  // stemOutline.scale.set(1.03, 1.03, 1.03);
   leafGroup = new THREE.Group();
   leaves.forEach(leafGeometry => {
     const newLeafMesh = new THREE.Mesh(leafGeometry, leafMat);
@@ -289,9 +319,13 @@ function drawDefaultTree(material, leafMat, regenTree) {
 
   stem.rotateY(90);
   leafGroup.rotateY(90);
+  stemOutline.rotateY(90);
+
+  stemGroup.add(stemOutline);
+  stemGroup.add(stem);
 
   plant = new THREE.Group();
-  plant.add(stem);
+  plant.add(stemGroup);
   plant.add(leafGroup);
 
   plantScene.add(plant);
