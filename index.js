@@ -181,8 +181,8 @@ async function waterInit() {
 
   const fbxLoader = new FBXLoader();
 
-  
-  
+
+
 
   fbxLoader.load(
     // resource URL
@@ -194,19 +194,19 @@ async function waterInit() {
         if (child.isMesh) {
 
           child.material = new THREE.MeshToonMaterial({ color: 0x71756b, side: THREE.FrontSide });
-          let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000, side: THREE.BackSide}); 
+          let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000, side: THREE.BackSide });
           rockOutlineMat.onBeforeCompile = (shader) => {
             const token = '#include <begin_vertex>'
             const customTransform = `
                 vec3 transformed = position + objectNormal*0.4;
             `
-            shader.vertexShader = 
-                shader.vertexShader.replace(token,customTransform)
+            shader.vertexShader =
+              shader.vertexShader.replace(token, customTransform)
           }
           let rockOutline = child.clone();
           rockOutline.material = rockOutlineMat;
           const scaleFact = 1.13;
-          rockOutline.scale.set(scaleFact*child.scale.x, scaleFact*child.scale.y, scaleFact*child.scale.z);
+          rockOutline.scale.set(scaleFact * child.scale.x, scaleFact * child.scale.y, scaleFact * child.scale.z);
           rockGroup.add(rockOutline);
         }
       });
