@@ -196,42 +196,42 @@ async function waterInit() {
 
   const fbxLoader = new FBXLoader();
 
-  const rockGroup = new THREE.Group();
+
+
 
   fbxLoader.load(
     // resource URL
     'models/rockring.fbx',
     function (object) {
+      const rockGroup = new THREE.Group();
       object.traverse(function (child) {
 
         if (child.isMesh) {
 
-          child.material = new THREE.MeshToonMaterial({ color: 0x71756b });
-          // child.material = new THREE.MeshToonMaterial({ color: 0x969c8c });
-          //   let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000 , side: THREE.BackSide}); 
-          //   rockOutlineMat.onBeforeCompile = (shader) => {
-          //     const token = '#include <begin_vertex>'
-          //     const customTransform = `
-          //         vec3 transformed = position + objectNormal*0.4;
-          //     `
-          //     shader.vertexShader = 
-          //         shader.vertexShader.replace(token,customTransform)
-          // }
-          //   let rockOutline = new THREE.Mesh(child.geometry, rockOutlineMat);
-          //   // rockOutline.scale.set(1.03, 1.03, 1.03);
-          //   rockGroup.add(rockOutline);
-          //   // rockGroup.add(child);
+          child.material = new THREE.MeshToonMaterial({ color: 0x71756b, side: THREE.FrontSide });
+          let rockOutlineMat = new THREE.MeshLambertMaterial({ color: 0x000000, side: THREE.BackSide });
+          rockOutlineMat.onBeforeCompile = (shader) => {
+            const token = '#include <begin_vertex>'
+            const customTransform = `
+                vec3 transformed = position + objectNormal*0.4;
+            `
+            shader.vertexShader =
+              shader.vertexShader.replace(token, customTransform)
+          }
+          let rockOutline = child.clone();
+          rockOutline.material = rockOutlineMat;
+          const scaleFact = 1.13;
+          rockOutline.scale.set(scaleFact * child.scale.x, scaleFact * child.scale.y, scaleFact * child.scale.z);
+          rockGroup.add(rockOutline);
         }
-
-
       });
-      // object.scale.set(0.01, 0.01, 0.01);
-      // object.position.y = 0.01;
-      // scene.add(object);
       object.scale.set(.2, .2, .2);
       object.position.set(0, -19, 100);
-      // object.position.y = 0.01;
+      rockGroup.scale.set(.2, .2, .2);
+      rockGroup.position.set(0, -19, 100);
+
       plantScene.add(object);
+      plantScene.add(rockGroup);
     },
     function (xhr) {
       console.log((xhr.loaded / xhr.total * 100) + '% loaded');
