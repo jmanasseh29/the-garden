@@ -69,6 +69,7 @@ let stem, leafGroup, plant, stemOutline;
 let numGrass = 30;
 let water, waterSimulation, caustics;
 let coin;
+let currentPlant;
 
 let trunkColor = 0xffffff;
 
@@ -457,7 +458,13 @@ function drawDefaultTree(material, leafMat, regenTree) {
   plant.add(stemGroup);
   plant.add(leafGroup);
 
-  plantScene.add(plant);
+  if(currentPlant) {
+    plantScene.remove(currentPlant);
+  }
+
+  currentPlant = plant;
+
+  plantScene.add(currentPlant);
   // let line_geometry = system.generateMesh(0, -70, 0);
   // for (const branch of line_geometry) {
   //     const branchMesh = new THREE.Mesh(branch, material);
